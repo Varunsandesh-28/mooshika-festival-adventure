@@ -1,0 +1,215 @@
+Create a complete, polished browser game called **“Mooshika Maze – Ganesha’s Modak Adventure”** for a **Ganesh Chaturthi college game design contest**.
+
+### GAME CONCEPT
+
+The player controls **Mooshika, Lord Ganesha’s mouse companion**, inside a colorful temple maze. The goal is to collect all the modaks and reach Lord Ganesha before the timer runs out.
+
+### TECHNOLOGY
+
+* Use **HTML, CSS, and JavaScript**
+* Make it run directly in Replit with no complicated setup
+* Prefer a simple **single-page web game**
+* Do NOT depend on external images, APIs, or paid assets
+* Use CSS shapes, emojis, SVG, or Canvas for graphics
+* Make sure the game works properly when opened in a browser
+
+### START SCREEN
+
+Create an attractive Ganesh Chaturthi start screen with:
+
+* Title: **🐭 MOOSHIKA MAZE**
+* Subtitle: **Ganesha’s Modak Adventure**
+* A large “START GAME” button
+* “HOW TO PLAY” button
+* Festive temple background
+* Diyas, flowers, rangoli, modaks, and festive decorations
+* A short instruction:
+  “Help Mooshika collect every modak and reach Ganesha!”
+
+### GAMEPLAY
+
+* Control Mooshika using:
+
+  * Arrow keys
+  * WASD
+* Create a proper maze with walls and pathways.
+* Mooshika must not be able to walk through walls.
+* Place several modaks around the maze.
+* The player must collect ALL modaks before the exit opens.
+* After collecting all modaks, show a glowing exit/goal.
+* The goal should lead to Lord Ganesha.
+* Add simple movement animations.
+
+### LEVELS
+
+Create at least **5 levels**:
+
+1. Easy – Small maze
+2. Medium – Larger maze
+3. Hard – More complicated maze
+4. Expert – Moving obstacles
+5. Festival Challenge – Large maze with more modaks and obstacles
+
+Each level should become progressively harder.
+
+### SCORE
+
+Add a scoring system:
+
+* Collecting a modak: +100 points
+* Reaching Ganesha: +500 points
+* Remaining time gives bonus points
+* Completing a level without losing a life gives a bonus
+* Display the score prominently.
+
+### TIMER
+
+Each level should have a countdown timer.
+
+For example:
+
+* Level 1: 60 seconds
+* Level 2: 55 seconds
+* Level 3: 50 seconds
+* Level 4: 45 seconds
+* Level 5: 40 seconds
+
+When time reaches zero, the player loses a life.
+
+### LIVES
+
+Give the player **3 lives**.
+
+Display:
+❤️ ❤️ ❤️
+
+If the player hits an obstacle:
+
+* Lose one life
+* Play a small visual effect
+* Reset Mooshika to the starting position
+
+If all lives are lost:
+Show a **GAME OVER** screen with:
+
+* Final score
+* Level reached
+* “PLAY AGAIN” button
+
+### OBSTACLES
+
+Add non-violent festival-themed obstacles such as:
+
+* Rolling ladoos
+* Moving temple lamps
+* Spinning flowers
+* Festival drums
+
+These should make the maze harder but remain fun and family-friendly.
+
+### GANESHA GOAL
+
+At the end of each maze, place a beautiful Lord Ganesha representation using emoji/SVG/CSS.
+
+When Mooshika reaches Ganesha:
+
+* Show a celebration animation
+* Display “MODAKS DELIVERED!”
+* Add bonus points
+* Move to the next level
+
+### POWER-UPS
+
+Add optional power-ups:
+
+* ⚡ Speed Boost – temporary faster movement
+* 🛡️ Protection – prevents one obstacle hit
+* ⏰ Time Bonus – adds 10 seconds
+* 🍬 Mega Modak – gives extra points
+
+### VISUAL DESIGN
+
+Make the game look polished and festive.
+
+Use:
+
+* Orange/gold/red/pink festival colors
+* Temple architecture
+* Rangoli patterns
+* Diyas
+* Marigold flowers
+* Modaks
+* Decorative borders
+* Sparkle effects
+* Smooth animations
+* Glowing buttons
+
+The game should feel like a **Ganesh Chaturthi festival adventure**, not a generic maze.
+
+### SOUND
+
+If possible, add simple browser-generated sounds using Web Audio API:
+
+* Modak collection sound
+* Level completion sound
+* Button click sound
+* Game-over sound
+
+Do not require external audio files.
+
+### UI
+
+The game HUD should show:
+
+**LEVEL:** 1
+**SCORE:** 0000
+**MODAKS:** 0/5
+**TIME:** 60
+**LIVES:** ❤️❤️❤️
+
+Add:
+
+* Pause button
+* Restart level button
+* Sound on/off button
+
+### MOBILE SUPPORT
+
+Make the game responsive.
+
+On mobile/tablet, provide on-screen controls:
+⬆️
+⬅️ ⬇️ ➡️
+
+### IMPORTANT QUALITY REQUIREMENTS
+
+* No broken buttons.
+* No console errors.
+* No external assets that might fail to load.
+* Make sure collision detection works correctly.
+* Make sure the maze is always solvable.
+* Make sure the player cannot walk through walls.
+* Make sure levels transition correctly.
+* Make sure the timer stops when the game is paused.
+* Make sure restarting resets the level correctly.
+* Make sure the final score is calculated correctly.
+
+### CONTEST POLISH
+
+Add a final screen saying:
+
+**🎉 FESTIVAL COMPLETE! 🎉**
+
+“Mooshika successfully delivered the modaks to Ganesha!”
+
+Show:
+
+* Final score
+* Levels completed
+* Modaks collected
+* Best score
+* Play Again button
+
+Make the overall game feel like a **finished student game-project suitable for a college Ganesh Chaturthi game design contest**, with a polished interface and enjoyable gameplay.
+
+Before finishing, test the complete game logic and fix any bugs you find.
