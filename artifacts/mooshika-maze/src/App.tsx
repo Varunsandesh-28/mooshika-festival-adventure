@@ -1,9 +1,34 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { type TouchEvent, useCallback, useEffect, useRef, useState } from 'react';
 
-type Screen = 'start' | 'howto' | 'playing' | 'paused' | 'levelComplete' | 'gameOver' | 'final';
+type Screen = 'start' | 'howto' | 'playing' | 'paused' | 'levelComplete' | 'gameOver' | 'final' | 'runnerPlaying' | 'runnerGameOver';
 type PowerType = 'speed' | 'shield' | 'time' | 'mega';
 type Position = { x: number; y: number };
 type PowerUp = Position & { type: PowerType };
+type RunnerObjectKind = 'modak' | 'coin' | 'golden' | 'obstacle' | 'arch' | 'speed' | 'blessing' | 'magnet' | 'dash';
+type RunnerObject = { id: number; lane: number; z: number; kind: RunnerObjectKind; hit?: boolean };
+type RunnerState = {
+  lane: number;
+  distance: number;
+  score: number;
+  modaks: number;
+  coins: number;
+  combo: number;
+  speed: number;
+  elapsed: number;
+  jumpTimer: number;
+  slideTimer: number;
+  speedBoostTimer: number;
+  blessingTimer: number;
+  magnetTimer: number;
+  dashTimer: number;
+  objects: RunnerObject[];
+  lastSpawn: number;
+  nextObjectId: number;
+  eventSlot: number;
+  eventMessage: string;
+  milestones: number[];
+  over: boolean;
+};
 
 const WIDTH = 17;
 const HEIGHT = 11;
@@ -13,6 +38,12 @@ const START: Position = { x: 1, y: 1 };
 const GOAL: Position = { x: 15, y: 9 };
 const posKey = (pos: Position) => `${pos.x}-${pos.y}`;
 const samePos = (a: Position, b: Position) => a.x === b.x && a.y === b.y;
+const makeRunnerState = (): RunnerState => ({
+  lane: 1, distance: 0, score: 0, modaks: 0, coins: 0, combo: 0, speed: 13, elapsed: 0,
+  jumpTimer: 0, slideTimer: 0, speedBoostTimer: 0, blessingTimer: 0, magnetTimer: 0, dashTimer: 0,
+  objects: [], lastSpawn: 0, nextObjectId: 1, eventSlot: -1, eventMessage: 'The festival road is yours. Keep your eyes on the next arch.',
+  milestones: [], over: false,
+});
 
 const makeWalls = (level: number) => {
   const walls = new Set<string>();
@@ -108,15 +139,63 @@ function App() {
   const [soundOn, setSoundOn] = useState(true);
   const [lastEvent, setLastEvent] = useState('Collect every modak to unlock the sanctum.');
   const eventTimer = useRef<number | undefined>(undefined);
+  const [runnerView, setRunnerView] = useState<RunnerState>(() => makeRunnerState());
+  const runnerRef = useRef<RunnerState>(runnerView);
+  const [runnerBest, setRunnerBest] = useState(() => Number(window.localStorage.getItem('mooshika-run-best') || 0));
+  const runnerTouch = useRef<{ x: number; y: number } | null>(null);
 
   const level = LEVELS[levelIndex];
   const levelTime = LEVEL_TIMES[levelIndex];
   const completedCount = collected.length;
+  const runnerSectionNames = ['Marigold Mile', 'Temple Bridge', 'Rangoli Square', 'Diyas by the River', 'Golden Gate'];
+  const runnerSection = runnerSectionNames[Math.floor(runnerView.distance / 160) % runnerSectionNames.length];
   const showEvent = useCallback((message: string) => {
     setLastEvent(message);
     if (eventTimer.current) window.clearTimeout(eventTimer.current);
     eventTimer.current = window.setTimeout(() => setLastEvent('Find the next offering and keep moving.'), 2800);
   }, []);
+
+  const syncRunner = useCallback((next: RunnerState) => {
+    runnerRef.current = next;
+    setRunnerView(next);
+  }, []);
+
+  const startRunner = useCallback(() => {
+    const next = makeRunnerState();
+    runnerRef.current = next;
+    setRunnerView(next);
+    setScreen('runnerPlaying');
+    playTone(soundOn, 494, 0.12);
+  }, [soundOn]);
+
+  const runnerLaneMove = useCallback((direction: number) => {
+    if (screen !== 'runnerPlaying') return;
+    const current = runnerRef.current;
+    if (current.over) return;
+    const nextLane = Math.max(0, Math.min(2, current.lane + direction));
+    if (nextLane !== current.lane) {
+      syncRunner({ ...current, lane: nextLane });
+      playTone(soundOn, 310 + nextLane * 55, 0.045);
+    }
+  }, [screen, soundOn, syncRunner]);
+
+  const runnerJump = useCallback(() => {
+    if (screen !== 'runnerPlaying') return;
+    const current = runnerRef.current;
+    if (!current.over && current.jumpTimer <= 0 && current.slideTimer <= 0) {
+      syncRunner({ ...current, jumpTimer: 0.7, combo: current.combo });
+      playTone(soundOn, 620, 0.06);
+    }
+  }, [screen, soundOn, syncRunner]);
+
+  const runnerSlide = useCallback(() => {
+    if (screen !== 'runnerPlaying') return;
+    const current = runnerRef.current;
+    if (!current.over && current.slideTimer <= 0 && current.jumpTimer <= 0) {
+      syncRunner({ ...current, slideTimer: 0.58 });
+      playTone(soundOn, 220, 0.06);
+    }
+  }, [screen, soundOn, syncRunner]);
 
   const startGame = useCallback(() => {
     setLevelIndex(0);
@@ -252,6 +331,20 @@ function App() {
   }, [move, screen]);
 
   useEffect(() => {
+    if (screen !== 'runnerPlaying') return undefined;
+    const keyHandler = (event: KeyboardEvent) => {
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'a', 'A', 'd', 'D', 'w', 'W', 's', 'S'].includes(event.key)) event.preventDefault();
+      if (event.key === 'ArrowLeft' || event.key === 'a' || event.key === 'A') runnerLaneMove(-1);
+      if (event.key === 'ArrowRight' || event.key === 'd' || event.key === 'D') runnerLaneMove(1);
+      if (event.key === 'ArrowUp' || event.key === 'w' || event.key === 'W') runnerJump();
+      if (event.key === 'ArrowDown' || event.key === 's' || event.key === 'S') runnerSlide();
+      if (event.key === 'Escape' || event.key === 'p' || event.key === 'P') setScreen('start');
+    };
+    window.addEventListener('keydown', keyHandler);
+    return () => window.removeEventListener('keydown', keyHandler);
+  }, [runnerJump, runnerLaneMove, runnerSlide, screen]);
+
+  useEffect(() => {
     if (screen !== 'playing') return undefined;
     const timer = window.setInterval(() => {
       setTimeLeft((current) => {
@@ -270,6 +363,113 @@ function App() {
     const timer = window.setInterval(() => setSpeedBoost((current) => Math.max(0, current - 1)), 1000);
     return () => window.clearInterval(timer);
   }, [screen, speedBoost]);
+
+  useEffect(() => {
+    if (screen !== 'runnerPlaying') return undefined;
+    const timer = window.setInterval(() => {
+      const current = runnerRef.current;
+      if (current.over) return;
+      const dt = 0.1;
+      const difficulty = 1 + current.distance / 850;
+      const next: RunnerState = {
+        ...current,
+        elapsed: current.elapsed + dt,
+        distance: current.distance + (current.speed + current.distance / 180) * dt,
+        jumpTimer: Math.max(0, current.jumpTimer - dt),
+        slideTimer: Math.max(0, current.slideTimer - dt),
+        speedBoostTimer: Math.max(0, current.speedBoostTimer - dt),
+        blessingTimer: Math.max(0, current.blessingTimer - dt),
+        magnetTimer: Math.max(0, current.magnetTimer - dt),
+        dashTimer: Math.max(0, current.dashTimer - dt),
+        objects: current.objects.map((object) => ({ ...object, z: object.z + (current.speed / 38) * dt * (current.dashTimer > 0 ? 1.45 : 1) })),
+      };
+      if (next.speedBoostTimer > 0) next.speed = 17;
+      else next.speed = Math.min(25, 13 + next.distance / 260);
+
+      const spawnEvery = Math.max(0.36, 0.82 - difficulty * 0.06);
+      if (next.elapsed - next.lastSpawn >= spawnEvery && next.objects.length < 28) {
+        const roll = Math.random();
+        let kind: RunnerObjectKind = roll < 0.23 ? 'modak' : roll < 0.42 ? 'coin' : roll < 0.47 ? 'golden' : roll < 0.57 ? 'speed' : roll < 0.64 ? 'blessing' : roll < 0.7 ? 'magnet' : roll < 0.74 ? 'dash' : roll < 0.87 ? 'obstacle' : 'arch';
+        if (next.distance < 40 && (kind === 'obstacle' || kind === 'arch')) kind = 'coin';
+        next.objects = [...next.objects, { id: next.nextObjectId, lane: Math.floor(Math.random() * 3), z: 0.02, kind }];
+        next.nextObjectId += 1;
+        next.lastSpawn = next.elapsed;
+      }
+
+      let collision = false;
+      let hitObstacle = false;
+      const collectibleKinds: RunnerObjectKind[] = ['modak', 'coin', 'golden', 'speed', 'blessing', 'magnet', 'dash'];
+      next.objects = next.objects.filter((object) => {
+        if (object.z > 1.08) {
+          if (collectibleKinds.includes(object.kind) && object.lane === next.lane) next.combo = 0;
+          return false;
+        }
+        if (object.hit || object.z < 0.79) return true;
+        const laneMatch = object.lane === next.lane;
+        const magnetPull = next.magnetTimer > 0 && collectibleKinds.includes(object.kind);
+        if (collectibleKinds.includes(object.kind) && (laneMatch || magnetPull)) {
+          object.hit = true;
+          if (object.kind === 'modak') { next.modaks += 1; next.score += 10; }
+          if (object.kind === 'coin') { next.coins += 1; next.score += 5; }
+          if (object.kind === 'golden') { next.modaks += 1; next.score += 100; next.eventMessage = 'Golden modak! A perfect festival offering.'; }
+          if (object.kind === 'speed') { next.speedBoostTimer = 6; next.eventMessage = 'Speed boost! The drums are getting louder.'; }
+          if (object.kind === 'blessing') { next.blessingTimer = 10; next.eventMessage = 'Ganesha blessing! One mistake will be forgiven.'; }
+          if (object.kind === 'magnet') { next.magnetTimer = 8; next.eventMessage = 'Modak magnet active. Sweet things are coming closer.'; }
+          if (object.kind === 'dash') { next.dashTimer = 4; next.score += 25; next.eventMessage = 'Divine dash! Mooshika runs like a spark.'; }
+          next.combo += 1;
+          return false;
+        }
+        if ((object.kind === 'obstacle' || object.kind === 'arch') && laneMatch) {
+          const jumped = next.jumpTimer > 0;
+          const slid = next.slideTimer > 0;
+          const safe = next.dashTimer > 0 || (object.kind === 'arch' ? slid : jumped);
+          if (!safe) {
+            if (next.blessingTimer > 0) {
+              next.blessingTimer = 0;
+              next.eventMessage = 'Blessing protected Mooshika from a tumble.';
+            } else {
+              collision = true;
+              hitObstacle = true;
+            }
+          } else {
+            next.score += 15;
+            next.combo += 1;
+          }
+          object.hit = true;
+          return false;
+        }
+        return true;
+      });
+
+      const eventSlot = Math.floor(next.distance / 130);
+      if (eventSlot > next.eventSlot) {
+        next.eventSlot = eventSlot;
+        next.eventMessage = ['Festival rush! Hold your lane.', 'Modak shower! Follow the sparkle.', 'Blessing bells! Keep the rhythm.'][eventSlot % 3];
+      }
+      [500, 1000, 2000].forEach((milestone) => {
+        if (next.distance >= milestone && !next.milestones.includes(milestone)) {
+          next.milestones = [...next.milestones, milestone];
+          next.eventMessage = `${milestone}m milestone! The whole festival is cheering.`;
+          next.score += milestone / 10;
+        }
+      });
+
+      if (collision && hitObstacle) {
+        next.over = true;
+        const record = Math.max(runnerBest, next.score);
+        if (record > runnerBest) {
+          setRunnerBest(record);
+          window.localStorage.setItem('mooshika-run-best', String(record));
+        }
+        playTone(soundOn, 120, 0.25);
+        syncRunner(next);
+        setScreen('runnerGameOver');
+        return;
+      }
+      syncRunner(next);
+    }, 100);
+    return () => window.clearInterval(timer);
+  }, [runnerBest, screen, soundOn, syncRunner]);
 
   const nextLevel = () => {
     const nextIndex = levelIndex + 1;
@@ -313,6 +513,7 @@ function App() {
               <p className="hero-subtitle">Help Mooshika collect every modak and reach Ganesha before the timer runs out.</p>
               <div className="hero-actions">
                 <button className="btn btn-primary start-cta" type="button" onClick={startGame} data-testid="button-start-game">START ADVENTURE</button>
+                <button className="btn btn-runner" type="button" onClick={startRunner} data-testid="button-start-run">START RUN <span aria-hidden="true">→</span></button>
                 <button className="btn btn-ghost" type="button" onClick={() => setScreen('howto')} data-testid="button-how-to-play">HOW TO PLAY</button>
               </div>
               <div className="best-score" data-testid="text-best-score">Best festival score <b>{bestScore.toLocaleString()}</b></div>
@@ -338,12 +539,144 @@ function App() {
               <li>Reach Ganesha after collecting every modak.</li>
               <li>Complete the level before the timer reaches zero.</li>
             </ul>
-            <div className="howto-tip">On mobile, use the directional pad below the maze. Press P or Escape to pause.</div>
+            <div className="howto-tip">On mobile, use the directional pad below the maze. Press P or Escape to pause. For the new three-lane run, swipe left or right to switch lanes and swipe up or down to jump or slide.</div>
             <div className="howto-actions">
               <button className="btn btn-primary" type="button" onClick={startGame} data-testid="button-howto-start">START ADVENTURE</button>
+              <button className="btn btn-runner" type="button" onClick={startRunner} data-testid="button-howto-run">START RUN</button>
               <button className="btn btn-ghost" type="button" onClick={() => setScreen('start')} data-testid="button-back-home">Back to title</button>
             </div>
           </section>
+        )}
+      </main>
+    );
+  }
+
+  if (screen === 'runnerPlaying' || screen === 'runnerGameOver') {
+    const runnerEnded = screen === 'runnerGameOver';
+    const touchStart = (event: TouchEvent<HTMLElement>) => {
+      const touch = event.changedTouches[0];
+      runnerTouch.current = { x: touch.clientX, y: touch.clientY };
+    };
+    const touchEnd = (event: TouchEvent<HTMLElement>) => {
+      const start = runnerTouch.current;
+      const touch = event.changedTouches[0];
+      runnerTouch.current = null;
+      if (!start) return;
+      const dx = touch.clientX - start.x;
+      const dy = touch.clientY - start.y;
+      if (Math.max(Math.abs(dx), Math.abs(dy)) < 24) return;
+      if (Math.abs(dx) > Math.abs(dy)) runnerLaneMove(dx > 0 ? 1 : -1);
+      else if (dy < 0) runnerJump();
+      else runnerSlide();
+    };
+    const objectSymbol = (kind: RunnerObjectKind) => {
+      if (kind === 'modak') return '◆';
+      if (kind === 'coin') return '●';
+      if (kind === 'golden') return '✦';
+      if (kind === 'obstacle') return '▲';
+      if (kind === 'arch') return '⌒';
+      if (kind === 'speed') return '»';
+      if (kind === 'blessing') return '◇';
+      if (kind === 'magnet') return '⊙';
+      return '↗';
+    };
+    return (
+      <main className="game-shell runner-shell">
+        <header className="topbar runner-topbar">
+          <div className="brand" data-testid="runner-brand">
+            <span className="brand-mark" aria-hidden="true">M</span>
+            <span className="brand-copy"><strong>Mooshika: Modak Run</strong><small>Ganesha’s Festival Adventure</small></span>
+          </div>
+          <div className="runner-toolbar">
+            <span className="runner-best">Best <b>{runnerBest.toLocaleString()}</b></span>
+            <button className="icon-btn" type="button" onClick={() => { setSoundOn((current) => !current); playTone(!soundOn, 520, 0.08); }} aria-pressed={soundOn} data-testid="button-runner-sound">{soundOn ? 'Sound on' : 'Sound off'}</button>
+            <button className="icon-btn" type="button" onClick={() => setScreen('start')} data-testid="button-runner-menu">Main menu</button>
+          </div>
+        </header>
+
+        <section className="runner-page" aria-label="Mooshika Modak Run">
+          <div className="runner-heading">
+            <div>
+              <div className="eyebrow">A three-lane festival sprint</div>
+              <h1>MOOSHIKA: <em>MODAK RUN</em></h1>
+              <p>GANESHA'S FESTIVAL ADVENTURE</p>
+            </div>
+            <div className="runner-section-tag"><span>Now passing</span><b>{runnerSection}</b></div>
+          </div>
+          <div className="runner-hud" aria-label="Run status">
+            <div className="runner-stat"><span>Distance</span><b data-testid="status-run-distance">{Math.floor(runnerView.distance)}m</b></div>
+            <div className="runner-stat"><span>Score</span><b data-testid="status-run-score">{runnerView.score.toLocaleString()}</b></div>
+            <div className="runner-stat"><span>Modaks</span><b data-testid="status-run-modaks">{runnerView.modaks}</b></div>
+            <div className="runner-stat"><span>Coins</span><b data-testid="status-run-coins">{runnerView.coins}</b></div>
+            <div className="runner-stat combo-stat"><span>Combo</span><b data-testid="status-run-combo">×{runnerView.combo}</b></div>
+            <div className="runner-stat"><span>Best</span><b data-testid="status-run-best">{runnerBest.toLocaleString()}</b></div>
+          </div>
+
+          <div className={`runner-stage ${runnerView.jumpTimer > 0 ? 'is-jumping' : ''} ${runnerView.slideTimer > 0 ? 'is-sliding' : ''}`} onTouchStart={touchStart} onTouchEnd={touchEnd}>
+            <div className="runner-sky" aria-hidden="true">
+              <span className="sky-moon">◐</span><span className="sky-star star-a">✦</span><span className="sky-star star-b">·</span><span className="sky-star star-c">✧</span>
+              <span className="runner-banner banner-a">GANPATI BAPPA MORIYA</span>
+              <span className="runner-banner banner-b">ॐ　✿　ॐ　✿　ॐ</span>
+              <span className="runner-tree tree-a">♣</span><span className="runner-tree tree-b">♣</span>
+            </div>
+            <div className="runner-arch arch-back" aria-hidden="true">⌒</div>
+            <div className="runner-arch arch-front" aria-hidden="true">⌒</div>
+            <div className="runner-lights" aria-hidden="true">·　•　·　•　·　•　·　•　·</div>
+            <div className="runner-track">
+              <div className="track-rangoli" aria-hidden="true">✧　·　✦　·　✧</div>
+              <div className="track-bridge" aria-hidden="true">╱╲╱╲╱╲╱╲╱╲</div>
+              {[0, 1, 2].map((lane) => <div className={`runner-lane lane-${lane}`} key={lane}><span className="lane-diya">◒</span><span className="lane-flower">✿</span></div>)}
+              {runnerView.objects.map((object) => (
+                <div
+                  className={`runner-object runner-object-${object.kind} ${object.hit ? 'collected' : ''}`}
+                  key={object.id}
+                  style={{ left: `${16.66 + object.lane * 33.34}%`, top: `${18 + object.z * 64}%`, transform: `translate(-50%, -50%) scale(${0.48 + object.z * 0.8})` }}
+                  aria-label={object.kind}
+                >
+                  <span>{objectSymbol(object.kind)}</span>
+                </div>
+              ))}
+              <div className={`runner-player lane-position-${runnerView.lane}`} aria-label="Mooshika runner">
+                <span className="mouse-ear ear-left" /><span className="mouse-ear ear-right" /><span className="mouse-face">M</span>
+              </div>
+            </div>
+            <div className="runner-event" aria-live="polite" data-testid="status-run-event">{runnerView.eventMessage}</div>
+            <div className="runner-power-strip" aria-label="Active powers">
+              {runnerView.speedBoostTimer > 0 && <span>Speed boost <b>{Math.ceil(runnerView.speedBoostTimer)}s</b></span>}
+              {runnerView.blessingTimer > 0 && <span>Ganesha blessing <b>ready</b></span>}
+              {runnerView.magnetTimer > 0 && <span>Modak magnet <b>{Math.ceil(runnerView.magnetTimer)}s</b></span>}
+              {runnerView.dashTimer > 0 && <span>Divine dash <b>{Math.ceil(runnerView.dashTimer)}s</b></span>}
+            </div>
+          </div>
+
+          <div className="runner-controls" aria-label="Touch controls">
+            <button type="button" className="runner-control" onClick={() => runnerLaneMove(-1)} aria-label="Move to left lane" data-testid="button-run-left">←</button>
+            <button type="button" className="runner-control runner-action" onClick={runnerJump} aria-label="Jump" data-testid="button-run-jump">Jump</button>
+            <button type="button" className="runner-control runner-action" onClick={runnerSlide} aria-label="Slide" data-testid="button-run-slide">Slide</button>
+            <button type="button" className="runner-control" onClick={() => runnerLaneMove(1)} aria-label="Move to right lane" data-testid="button-run-right">→</button>
+          </div>
+          <p className="runner-help">Arrow / A D to change lanes　·　ArrowUp / W to jump　·　ArrowDown / S to slide　·　Swipe on the track</p>
+        </section>
+
+        {runnerEnded && (
+          <div className="overlay runner-overlay" role="dialog" aria-modal="true" aria-labelledby="runner-over-title">
+            <div className="modal-panel runner-over-panel">
+              <span className="modal-art" aria-hidden="true">✦</span>
+              <div className="modal-kicker">The drums still echo</div>
+              <h2 id="runner-over-title">Run complete</h2>
+              <p>Mooshika reached {Math.floor(runnerView.distance)} metres through {runnerSection}.</p>
+              <div className="runner-results">
+                <div><span>Score</span><b>{runnerView.score.toLocaleString()}</b></div>
+                <div><span>Best</span><b>{runnerBest.toLocaleString()}</b></div>
+                <div><span>Modaks</span><b>{runnerView.modaks}</b></div>
+                <div><span>Coins</span><b>{runnerView.coins}</b></div>
+              </div>
+              <div className="modal-actions">
+                <button className="btn btn-primary" type="button" onClick={startRunner} data-testid="button-run-again">Play again</button>
+                <button className="btn btn-ghost" type="button" onClick={() => setScreen('start')} data-testid="button-run-home">Main menu</button>
+              </div>
+            </div>
+          </div>
         )}
       </main>
     );
