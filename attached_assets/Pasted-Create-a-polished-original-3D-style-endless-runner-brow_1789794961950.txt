@@ -1,0 +1,243 @@
+Create a polished original 3D-style endless runner browser game called:
+
+🐭 MOOSHIKA: MODAK RUN
+"Ganesha's Festival Adventure"
+
+IMPORTANT:
+This should be an ORIGINAL endless-runner game inspired by the general genre of games like Temple Run, but do NOT copy Temple Run's characters, artwork, maps, logos, sounds, UI, or other copyrighted assets.
+
+The main character is Mooshika, a cute original mouse character.
+
+GAMEPLAY:
+Mooshika automatically runs forward through a beautiful Ganesh Chaturthi festival environment.
+
+The player controls Mooshika with:
+
+LEFT ARROW / A = move left
+RIGHT ARROW / D = move right
+UP ARROW / W = jump
+DOWN ARROW / S = slide
+
+Also add mobile touch/swipe controls.
+
+OBJECTIVE:
+Run as far as possible, collect modaks and festival coins, avoid obstacles, and achieve the highest score.
+
+GAME FEATURES:
+
+1. START SCREEN
+Create a beautiful festive start screen containing:
+
+🐭 MOOSHIKA: MODAK RUN
+"Ganesha's Festival Adventure"
+
+Buttons:
+START RUN
+HOW TO PLAY
+SOUND ON/OFF
+
+2. ENDLESS RUNNER
+
+Create 3 lanes.
+
+Mooshika continuously runs forward.
+
+The player can switch between lanes, jump and slide.
+
+The track should continuously generate new sections so the game feels endless.
+
+3. FESTIVAL ENVIRONMENT
+
+Create an original colorful Ganesh Chaturthi environment with:
+
+- Temple architecture
+- Diyas
+- Marigold flowers
+- Rangoli
+- Festival decorations
+- Banners
+- Modaks
+- Trees
+- Bridges
+- Decorative lights
+
+Change the environment periodically to keep the run interesting.
+
+4. COLLECTIBLES
+
+Add:
+
+🧁 Modak = +10 points
+🪙 Festival Coin = +5 points
+✨ Golden Modak = +100 points
+
+Create attractive collection animations.
+
+5. OBSTACLES
+
+Add family-friendly obstacles such as:
+
+- Temple pillars
+- Festival drums
+- Flower decorations
+- Rangoli barriers
+- Decorative boxes
+- Fallen branches
+
+Collision should end the run or reduce a protection power-up.
+
+6. POWER-UPS
+
+Add:
+
+⚡ SPEED BOOST
+Temporarily increases running speed.
+
+🛡️ GANESHA BLESSING
+Protects Mooshika from one collision.
+
+🧲 MODAK MAGNET
+Automatically attracts nearby modaks.
+
+✨ DIVINE DASH
+Temporarily protects Mooshika and increases speed.
+
+7. DIFFICULTY
+
+Gradually increase:
+
+- Running speed
+- Obstacle frequency
+- Track complexity
+- Required reaction speed
+
+The game should become challenging but remain playable.
+
+8. SCORE
+
+Display:
+
+DISTANCE
+SCORE
+MODAKS
+COINS
+BEST SCORE
+
+Give bonus points based on distance and collectibles.
+
+9. COMBO SYSTEM
+
+If the player collects several modaks in a row without missing one:
+
+MODAK COMBO x2
+MODAK COMBO x3
+MODAK COMBO x4
+
+Higher combos give bonus points.
+
+10. FESTIVAL EVENTS
+
+Occasionally trigger special events such as:
+
+🎉 FESTIVAL RUSH
+The screen becomes more festive and the player must dodge a faster sequence of obstacles.
+
+🧁 MODAK SHOWER
+Many modaks appear for a short period.
+
+✨ GANESHA'S BLESSING
+A temporary protective effect.
+
+11. GAME OVER
+
+When the player loses:
+
+GAME OVER
+
+Show:
+
+Distance
+Score
+Modaks collected
+Coins collected
+Best score
+
+Buttons:
+
+PLAY AGAIN
+MAIN MENU
+
+12. FINAL MILESTONE
+
+At major distance milestones, show messages such as:
+
+"500m — FESTIVAL BEGINNING!"
+"1000m — MODAK MASTER!"
+"2000m — FESTIVAL HERO!"
+
+13. VISUAL QUALITY
+
+Make the game look polished and colorful.
+
+Use CSS, Canvas, SVG, or procedural graphics.
+
+Do not rely on external image URLs.
+
+Do not use copyrighted Temple Run assets.
+
+Create original visual elements.
+
+14. SOUND
+
+Use Web Audio API if possible for simple:
+
+- Coin collection
+- Modak collection
+- Jump
+- Power-up
+- Game over
+- Button clicks
+
+Add a sound toggle.
+
+15. MOBILE
+
+Add swipe controls:
+
+Swipe left = move left
+Swipe right = move right
+Swipe up = jump
+Swipe down = slide
+
+16. PERFORMANCE
+
+Make the game run smoothly in Chrome.
+
+Avoid unnecessary heavy assets.
+
+Make sure there are no JavaScript console errors.
+
+17. IMPORTANT TESTING
+
+Before finishing, test:
+
+- Start button
+- Keyboard controls
+- Mobile controls
+- Lane switching
+- Jumping
+- Sliding
+- Collision detection
+- Collectibles
+- Power-ups
+- Score
+- Distance
+- Increasing difficulty
+- Game over
+- Restart
+- Best score
+- Sound toggle
+
+Fix all bugs before completing the project.
+
+Make this feel like a polished original student game suitable for a Ganesh Chaturthi game design competition.
