@@ -287,7 +287,7 @@ function App() {
 
   if (screen === 'start' || screen === 'howto') {
     return (
-      <main className="game-shell">
+      <main className={`game-shell start-screen ${screen === 'howto' ? 'howto-screen' : ''}`}>
         <header className="topbar">
           <div className="brand" data-testid="brand-mark">
             <span className="brand-mark" aria-hidden="true">🐘</span>
@@ -295,15 +295,25 @@ function App() {
           </div>
           <div className="festival-stamp">A Ganesh Chaturthi game night</div>
         </header>
+        <div className="festival-decor" aria-hidden="true">
+          <span className="decor-flower flower-one">✿</span>
+          <span className="decor-flower flower-two">✿</span>
+          <span className="decor-diya diya-left">◒</span>
+          <span className="decor-diya diya-right">◒</span>
+          <span className="decor-modak modak-left">◆</span>
+          <span className="decor-modak modak-right">◆</span>
+          <span className="decor-rangoli">✧ · ✦ · ✧</span>
+        </div>
         {screen === 'start' ? (
           <section className="start-layout" aria-labelledby="game-title">
-            <div>
+            <div className="start-copy">
               <div className="eyebrow">The temple doors are open</div>
-              <h1 className="hero-title" id="game-title">Find the<br /><em>sweet path.</em></h1>
-              <p className="hero-subtitle">Guide Mooshika through five living temple mazes, gather every modak, and make it to Ganesha before the lamps burn low.</p>
+              <h1 className="game-title" id="game-title">🐭 MOOSHIKA <em>MAZE</em></h1>
+              <p className="game-subtitle">GANESHA'S MODAK ADVENTURE</p>
+              <p className="hero-subtitle">Help Mooshika collect every modak and reach Ganesha before the timer runs out.</p>
               <div className="hero-actions">
-                <button className="btn btn-primary" type="button" onClick={startGame} data-testid="button-start-game">Start Game</button>
-                <button className="btn btn-ghost" type="button" onClick={() => setScreen('howto')} data-testid="button-how-to-play">How To Play</button>
+                <button className="btn btn-primary start-cta" type="button" onClick={startGame} data-testid="button-start-game">START ADVENTURE</button>
+                <button className="btn btn-ghost" type="button" onClick={() => setScreen('howto')} data-testid="button-how-to-play">HOW TO PLAY</button>
               </div>
               <div className="best-score" data-testid="text-best-score">Best festival score <b>{bestScore.toLocaleString()}</b></div>
             </div>
@@ -321,15 +331,18 @@ function App() {
           <section className="howto-panel" aria-labelledby="howto-title">
             <div className="eyebrow">Before you enter</div>
             <h2 id="howto-title">How to play</h2>
-            <p>Each chamber holds a different route. Gather every modak, then step onto the gold sanctum tile to continue.</p>
-            <div className="howto-grid">
-              <div className="howto-item"><strong>Move Mooshika</strong><span>Use arrow keys or WASD. On a phone, use the directional pad below the maze.</span><div className="keycaps"><span className="keycap">W</span><span className="keycap">A</span><span className="keycap">S</span><span className="keycap">D</span></div></div>
-              <div className="howto-item"><strong>Beat the clock</strong><span>You have less time in every chamber. A lost life sends you back to the entrance.</span></div>
-              <div className="howto-item"><strong>Read the temple</strong><span>Gold tiles mark the exit. Later mazes add obstacles and helpful power-ups.</span></div>
-              <div className="howto-item"><strong>Build your score</strong><span>Modaks, speed, the goal, remaining time, and a clean run all add to your festival score.</span></div>
+            <ul className="howto-steps">
+              <li>Use Arrow Keys or WASD to move Mooshika.</li>
+              <li>Collect all the modaks.</li>
+              <li>Avoid obstacles.</li>
+              <li>Reach Ganesha after collecting every modak.</li>
+              <li>Complete the level before the timer reaches zero.</li>
+            </ul>
+            <div className="howto-tip">On mobile, use the directional pad below the maze. Press P or Escape to pause.</div>
+            <div className="howto-actions">
+              <button className="btn btn-primary" type="button" onClick={startGame} data-testid="button-howto-start">START ADVENTURE</button>
+              <button className="btn btn-ghost" type="button" onClick={() => setScreen('start')} data-testid="button-back-home">Back to title</button>
             </div>
-            <button className="btn btn-primary" type="button" onClick={startGame} data-testid="button-howto-start">Enter the maze</button>
-            <button className="btn btn-ghost" type="button" onClick={() => setScreen('start')} data-testid="button-back-home">Back</button>
           </section>
         )}
       </main>
