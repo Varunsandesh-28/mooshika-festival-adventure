@@ -748,7 +748,18 @@ function App() {
               <span className="runner-banner banner-a">GANPATI BAPPA MORIYA</span>
               <span className="runner-banner banner-b">ॐ　✿　ॐ　✿　ॐ</span>
               <span className="runner-tree tree-a">♣</span><span className="runner-tree tree-b">♣</span>
-              <span className="runner-temple" aria-hidden="true">🛕</span>
+              <div className="festival-horizon">
+                <div className="temple-complex">
+                  <span className="temple-tower tower-left"><i /><b /></span>
+                  <span className="temple-tower tower-main"><i /><b /></span>
+                  <span className="temple-tower tower-right"><i /><b /></span>
+                  <span className="temple-dome">ॐ</span>
+                  <span className="temple-shrine">✦</span>
+                </div>
+                <div className="horizon-stall stall-left"><i>✿</i><b>MODAK</b></div>
+                <div className="horizon-stall stall-right"><i>◒</i><b>दीया</b></div>
+                <div className="horizon-garland">•　🌼　•　🌼　•　🌼　•</div>
+              </div>
               <span className="runner-garland garland-a">🌼•🌼•🌼•🌼•🌼</span>
               <span className="runner-garland garland-b">🌼•🌼•🌼•🌼•🌼</span>
               <span className="runner-bells">🔔　🔔　🔔</span>
@@ -762,6 +773,9 @@ function App() {
               <div className="track-rangoli" aria-hidden="true">✧　·　✦　·　✧</div>
               <div className="track-bridge" aria-hidden="true">╱╲╱╲╱╲╱╲╱╲</div>
               <div className="track-pillars track-pillars-left" aria-hidden="true">▐　▐　▐</div><div className="track-pillars track-pillars-right" aria-hidden="true">▌　▌　▌</div>
+              <div className="road-edge road-edge-left" aria-hidden="true"><span>◒</span><span>✿</span><span>◒</span></div>
+              <div className="road-edge road-edge-right" aria-hidden="true"><span>◒</span><span>✿</span><span>◒</span></div>
+              <div className="road-medallion" aria-hidden="true">ॐ</div>
               {[0, 1, 2].map((lane) => <div className={`runner-lane lane-${lane}`} key={lane}><span className="lane-diya">◒</span><span className="lane-flower">✿</span><span className="lane-rangoli">✧</span></div>)}
               {runnerView.objects.map((object) => (
                 <div
@@ -774,7 +788,7 @@ function App() {
                 </div>
               ))}
               <div className={`runner-player lane-position-${runnerView.lane}`} aria-label="Mooshika runner">
-                <span className="mouse-shadow" aria-hidden="true" /><span className="mouse-ear ear-left" /><span className="mouse-ear ear-right" /><span className="mouse-scarf" aria-hidden="true">•</span><span className="mouse-face">M</span>
+                <span className="mouse-shadow" aria-hidden="true" /><span className="mouse-tail" aria-hidden="true" /><span className="mouse-ear ear-left" /><span className="mouse-ear ear-right" /><span className="mouse-scarf" aria-hidden="true">•</span><span className="mouse-feet" aria-hidden="true">••</span><span className="mouse-face">M</span>
               </div>
             </div>
             <div className="runner-event" aria-live="polite" data-testid="status-run-event">{runnerView.eventMessage}</div>

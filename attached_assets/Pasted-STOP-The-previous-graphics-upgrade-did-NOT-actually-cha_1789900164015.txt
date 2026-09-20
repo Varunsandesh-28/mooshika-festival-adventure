@@ -1,0 +1,321 @@
+STOP. The previous graphics upgrade did NOT actually change the main Modak Run gameplay scene.
+
+I have checked the result and the running track still looks essentially the same.
+
+I want a REAL GRAPHICS REDESIGN of MODAK RUN.
+
+CRITICAL SAFETY RULE:
+DO NOT TOUCH MOOSHIKA MAZE.
+DO NOT TOUCH THE GAME HUB.
+DO NOT CHANGE ANY GAMEPLAY LOGIC.
+
+ONLY redesign the visual/rendering layer of MODAK RUN.
+
+==================================================
+FIRST: INSPECT THE CODE
+==================================================
+
+Before editing anything, find the exact code responsible for rendering the MODAK RUN:
+
+- running track
+- background
+- lanes
+- Mooshika
+- obstacles
+- collectibles
+- environment
+- HUD
+
+Do not just change CSS colors.
+
+I want the actual gameplay scene to look substantially different.
+
+If the current scene is generated using Canvas, SVG, CSS, or DOM elements, modify the actual rendering code responsible for that scene.
+
+==================================================
+NEW MODAK RUN VISUAL CONCEPT
+==================================================
+
+Replace the current plain brown/purple running scene with:
+
+"THE GRAND GANESHA FESTIVAL ROAD"
+
+The player should feel like Mooshika is running through a huge decorated Ganesh Chaturthi temple festival.
+
+==================================================
+BACKGROUND
+==================================================
+
+Create a completely new layered background.
+
+Far background:
+
+- Large illuminated temple
+- Multiple temple towers
+- Glowing Ganesha shrine
+- Purple evening sky
+- Warm golden moon
+- Stars
+- Festival lights
+
+Middle background:
+
+- Temple buildings
+- Marigold decorations
+- Hanging bells
+- Festival banners
+- Diyas
+- Flower garlands
+- Trees
+- Decorative arches
+- Small festival stalls
+
+Foreground:
+
+- Flower petals
+- Floating sparkles
+- Diyas
+- Rangoli decorations
+- Temple pillars
+
+Use multiple layers to create real depth.
+
+==================================================
+RUNNING ROAD
+==================================================
+
+Replace the current simple brown road appearance.
+
+Create a GRAND TEMPLE PATHWAY:
+
+- Stone/paved pathway
+- Three clearly defined lanes
+- Gold decorative borders
+- Rangoli patterns
+- Flower petals
+- Diyas along the sides
+- Decorative lamps
+- Temple arches
+
+The road should have strong perspective.
+
+The three lanes should clearly converge toward the temple in the distance.
+
+Make the road visually feel like it is moving toward the player.
+
+==================================================
+MOOSHIKA
+==================================================
+
+Keep the existing Mooshika gameplay object.
+
+Redesign its VISUAL appearance.
+
+Make Mooshika:
+
+- Larger and easier to see
+- Cute
+- Clearly animated
+- Running with visible movement
+- Slightly bobbing
+- Have a soft ground shadow
+- Have a subtle golden glow
+
+Do not change movement or collision logic.
+
+==================================================
+COLLECTIBLES
+==================================================
+
+Redesign the visuals.
+
+MODAK:
+
+Make each modak look like an actual golden festival sweet with:
+
+- Golden outline
+- Cream center
+- Glow
+- Floating animation
+- Sparkles
+
+COIN:
+
+Make coins look like shiny golden festival coins with:
+
+- Rotation
+- Highlight
+- Glow
+
+==================================================
+OBSTACLES
+==================================================
+
+Redesign the visual appearance of the existing obstacles.
+
+Use clearly recognizable festival objects:
+
+- Large decorative drums
+- Temple barriers
+- Flower arrangements
+- Festival crates
+- Rangoli barriers
+
+Make them colorful and detailed.
+
+Keep the existing collision behavior.
+
+==================================================
+POWER-UPS
+==================================================
+
+Make the existing power-ups visually spectacular.
+
+Speed Boost:
+Golden lightning effect.
+
+Protection:
+Glowing circular shield.
+
+Magnet:
+Orbiting modaks.
+
+Divine Dash:
+Golden particle trail behind Mooshika.
+
+Keep all existing power-up mechanics unchanged.
+
+==================================================
+CAMERA / DEPTH
+==================================================
+
+This is very important.
+
+Make the scene visually feel like a real endless runner.
+
+Objects far away should be small.
+
+As objects approach the player:
+
+- They become larger
+- They move downward on the screen
+- They appear closer
+
+Add:
+
+- Perspective
+- Parallax
+- Moving scenery
+- Particle effects
+- Shadows
+- Lighting
+
+The visual environment should continuously move toward the player.
+
+==================================================
+FESTIVAL ATMOSPHERE
+==================================================
+
+Add subtle animated effects:
+
+- Flickering diyas
+- Moving flower petals
+- Swaying banners
+- Glowing temple lights
+- Floating sparkles
+- Occasional flower showers
+
+Do not make the screen too cluttered.
+
+==================================================
+HUD REDESIGN
+==================================================
+
+Keep the same information and values.
+
+Redesign the HUD to look like a premium festival game.
+
+Show:
+
+🧁 MODAKS
+🪙 COINS
+⭐ SCORE
+📏 DISTANCE
+🔥 COMBO
+
+Use elegant rounded panels with gold borders and deep purple accents.
+
+==================================================
+IMPORTANT: DO NOT FAKE THE REDESIGN
+==================================================
+
+Do NOT simply:
+
+- change the background color
+- add a few flowers
+- add a few particles
+- change button colors
+
+That is NOT enough.
+
+The actual running environment, road, background, character presentation, collectibles and obstacles must receive a substantial visual redesign.
+
+==================================================
+GAMEPLAY MUST REMAIN IDENTICAL
+==================================================
+
+DO NOT CHANGE:
+
+- movement
+- lane switching
+- jumping
+- sliding
+- collision detection
+- score
+- distance
+- coins
+- modak values
+- power-up duration
+- speed progression
+- Festival Rush
+- game-over logic
+- best score
+- mobile controls
+
+==================================================
+DO NOT TOUCH THESE
+==================================================
+
+🚫 MOOSHIKA MAZE
+🚫 GAME HUB
+🚫 TEMPLE MAZE GRAPHICS
+🚫 TEMPLE MAZE GAMEPLAY
+🚫 SHARED NAVIGATION
+
+Only MODAK RUN's visual layer may change.
+
+==================================================
+FINAL VERIFICATION
+==================================================
+
+After implementation:
+
+1. Open Game Hub.
+2. Confirm Temple Maze is still present.
+3. Play Temple Maze briefly and confirm it is unchanged.
+4. Return to Game Hub.
+5. Open Modak Run.
+6. Confirm the NEW Grand Ganesha Festival Road graphics are visible immediately.
+7. Test movement.
+8. Test jumping.
+9. Test sliding.
+10. Test collectibles.
+11. Test obstacles.
+12. Test power-ups.
+13. Test score.
+14. Test distance.
+15. Test game over.
+
+If the new graphics are not visibly different from the previous version, continue modifying the Modak Run rendering until the difference is obvious.
+
+Do not report "graphics upgraded" unless the actual gameplay scene has visibly changed.
