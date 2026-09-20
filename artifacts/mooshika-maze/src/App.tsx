@@ -29,6 +29,17 @@ type RunnerState = {
   milestones: number[];
   over: boolean;
 };
+type FestivalProgress = {
+  mazeBest: number;
+  runBest: number;
+  totalModaks: number;
+  totalCoins: number;
+  levelsCompleted: number;
+  longestRun: number;
+  powerUpsUsed: number;
+  mazeCompleted: boolean;
+  runCompleted: boolean;
+};
 
 const WIDTH = 17;
 const HEIGHT = 11;
@@ -44,6 +55,18 @@ const makeRunnerState = (): RunnerState => ({
   objects: [], lastSpawn: 0, nextObjectId: 1, eventSlot: -1, eventMessage: 'The festival road is yours. Keep your eyes on the next arch.',
   milestones: [], over: false,
 });
+const defaultProgress: FestivalProgress = {
+  mazeBest: 0, runBest: 0, totalModaks: 0, totalCoins: 0, levelsCompleted: 0,
+  longestRun: 0, powerUpsUsed: 0, mazeCompleted: false, runCompleted: false,
+};
+const readProgress = (): FestivalProgress => {
+  try {
+    const saved = JSON.parse(window.localStorage.getItem('mooshika-festival-progress') || '{}') as Partial<FestivalProgress>;
+    return { ...defaultProgress, ...saved };
+  } catch {
+    return defaultProgress;
+  }
+};
 
 const makeWalls = (level: number) => {
   const walls = new Set<string>();
@@ -135,13 +158,16 @@ function App() {
   const [levelBonus, setLevelBonus] = useState(0);
   const [levelScores, setLevelScores] = useState<number[]>([]);
   const [finalScore, setFinalScore] = useState(0);
-  const [bestScore, setBestScore] = useState(() => Number(window.localStorage.getItem('mooshika-best-score') || 0));
-  const [soundOn, setSoundOn] = useState(true);
+  const [bestScore, setBestScore] = useState(() => Math.max(Number(window.localStorage.getItem('mooshika-best-score') || 0), readProgress().mazeBest));
+  const [soundOn, setSoundOn] = useState(() => window.localStorage.getItem('mooshika-sound') !== 'off');
   const [lastEvent, setLastEvent] = useState('Collect every modak to unlock the sanctum.');
   const eventTimer = useRef<number | undefined>(undefined);
   const [runnerView, setRunnerView] = useState<RunnerState>(() => makeRunnerState());
   const runnerRef = useRef<RunnerState>(runnerView);
-  const [runnerBest, setRunnerBest] = useState(() => Number(window.localStorage.getItem('mooshika-run-best') || 0));
+  const [runnerBest, setRunnerBest] = useState(() => Math.max(Number(window.localStorage.getItem('mooshika-run-best') || 0), readProgress().runBest));
+  const [progress, setProgress] = useState<FestivalProgress>(() => readProgress());
+  const [mazeRunModaks, setMazeRunModaks] = useState(0);
+  const [timeBonusTotal, setTimeBonusTotal] = useState(0);
   const runnerTouch = useRef<{ x: number; y: number } | null>(null);
 
   const level = LEVELS[levelIndex];
@@ -159,6 +185,21 @@ function App() {
     runnerRef.current = next;
     setRunnerView(next);
   }, []);
+
+  const updateProgress = useCallback((recipe: (current: FestivalProgress) => FestivalProgress) => {
+    setProgress((current) => {
+      const next = recipe(current);
+      window.localStorage.setItem('mooshika-festival-progress', JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const toggleSound = useCallback(() => {
+    const next = !soundOn;
+    setSoundOn(next);
+    window.localStorage.setItem('mooshika-sound', next ? 'on' : 'off');
+    playTone(next, 520, 0.08);
+  }, [soundOn]);
 
   const startRunner = useCallback(() => {
     const next = makeRunnerState();
@@ -210,6 +251,8 @@ function App() {
     setShield(0);
     setLevelScores([]);
     setFinalScore(0);
+    setMazeRunModaks(0);
+    setTimeBonusTotal(0);
     setLastEvent('Collect every modak to unlock the sanctum.');
     setScreen('playing');
     playTone(soundOn, 392, 0.12);
@@ -228,20 +271,33 @@ function App() {
     if (lives <= 1) {
       setLives(0);
       setFinalScore(score);
+      if (score > bestScore) {
+        setBestScore(score);
+        window.localStorage.setItem('mooshika-best-score', String(score));
+      }
+      updateProgress((current) => ({ ...current, mazeBest: Math.max(current.mazeBest, score) }));
       setScreen('gameOver');
       playTone(soundOn, 110, 0.32);
       return;
     }
     setLives((current) => current - 1);
     resetLevelPosition(message);
-  }, [lives, resetLevelPosition, score, soundOn]);
+  }, [bestScore, lives, resetLevelPosition, score, soundOn, updateProgress]);
 
   const finishLevel = useCallback(() => {
-    const bonus = 500 + timeLeft * 10 + (lostLifeThisLevel ? 0 : 250);
+    const timeBonus = timeLeft * 10 + (lostLifeThisLevel ? 0 : 250);
+    const bonus = 500 + timeBonus;
     const newTotal = score + bonus;
     setLevelBonus(bonus);
+    setTimeBonusTotal((current) => current + timeBonus);
     setScore(newTotal);
     setLevelScores((scores) => [...scores, bonus]);
+    updateProgress((current) => ({
+      ...current,
+      mazeBest: Math.max(current.mazeBest, newTotal),
+      levelsCompleted: Math.min(LEVELS.length, current.levelsCompleted + 1),
+      mazeCompleted: current.mazeCompleted || levelIndex === LEVELS.length - 1,
+    }));
     playTone(soundOn, 660, 0.16);
     if (levelIndex === LEVELS.length - 1) {
       setFinalScore(newTotal);
@@ -253,13 +309,15 @@ function App() {
     } else {
       setScreen('levelComplete');
     }
-  }, [bestScore, levelIndex, lostLifeThisLevel, score, soundOn, timeLeft]);
+  }, [bestScore, levelIndex, lostLifeThisLevel, score, soundOn, timeLeft, updateProgress]);
 
   const collectAt = useCallback((next: Position) => {
     const key = posKey(next);
     const modak = level.modaks.some((item) => posKey(item) === key);
     if (modak && !collected.includes(key)) {
       setCollected((items) => [...items, key]);
+      setMazeRunModaks((current) => current + 1);
+      updateProgress((current) => ({ ...current, totalModaks: current.totalModaks + 1 }));
       setScore((current) => current + 100);
       showEvent('Modak collected. The path glimmers ahead.');
       playTone(soundOn, 560, 0.1);
@@ -267,6 +325,7 @@ function App() {
     const power = level.powers.find((item) => posKey(item) === key);
     if (power && !collectedPowers.includes(key)) {
       setCollectedPowers((items) => [...items, key]);
+      updateProgress((current) => ({ ...current, powerUpsUsed: current.powerUpsUsed + 1 }));
       if (power.type === 'speed') setSpeedBoost(18);
       if (power.type === 'shield') setShield(1);
       if (power.type === 'time') setTimeLeft((current) => current + 12);
@@ -282,7 +341,7 @@ function App() {
         playTone(soundOn, 180, 0.1);
       }
     }
-  }, [collected, collectedPowers, finishLevel, level, showEvent, soundOn]);
+  }, [collected, collectedPowers, finishLevel, level, showEvent, soundOn, updateProgress]);
 
   const move = useCallback((dx: number, dy: number) => {
     if (screen !== 'playing') return;
@@ -409,9 +468,21 @@ function App() {
         const magnetPull = next.magnetTimer > 0 && collectibleKinds.includes(object.kind);
         if (collectibleKinds.includes(object.kind) && (laneMatch || magnetPull)) {
           object.hit = true;
-          if (object.kind === 'modak') { next.modaks += 1; next.score += 10; }
-          if (object.kind === 'coin') { next.coins += 1; next.score += 5; }
-          if (object.kind === 'golden') { next.modaks += 1; next.score += 100; next.eventMessage = 'Golden modak! A perfect festival offering.'; }
+          if (object.kind === 'modak') {
+            next.modaks += 1; next.score += 10;
+            updateProgress((currentProgress) => ({ ...currentProgress, totalModaks: currentProgress.totalModaks + 1 }));
+          }
+          if (object.kind === 'coin') {
+            next.coins += 1; next.score += 5;
+            updateProgress((currentProgress) => ({ ...currentProgress, totalCoins: currentProgress.totalCoins + 1 }));
+          }
+          if (object.kind === 'golden') {
+            next.modaks += 1; next.score += 100; next.eventMessage = 'Golden modak! A perfect festival offering.';
+            updateProgress((currentProgress) => ({ ...currentProgress, totalModaks: currentProgress.totalModaks + 1 }));
+          }
+          if (['speed', 'blessing', 'magnet', 'dash'].includes(object.kind)) {
+            updateProgress((currentProgress) => ({ ...currentProgress, powerUpsUsed: currentProgress.powerUpsUsed + 1 }));
+          }
           if (object.kind === 'speed') { next.speedBoostTimer = 6; next.eventMessage = 'Speed boost! The drums are getting louder.'; }
           if (object.kind === 'blessing') { next.blessingTimer = 10; next.eventMessage = 'Ganesha blessing! One mistake will be forgiven.'; }
           if (object.kind === 'magnet') { next.magnetTimer = 8; next.eventMessage = 'Modak magnet active. Sweet things are coming closer.'; }
@@ -461,6 +532,12 @@ function App() {
           setRunnerBest(record);
           window.localStorage.setItem('mooshika-run-best', String(record));
         }
+        updateProgress((currentProgress) => ({
+          ...currentProgress,
+          runBest: Math.max(currentProgress.runBest, next.score),
+          longestRun: Math.max(currentProgress.longestRun, Math.floor(next.distance)),
+          runCompleted: true,
+        }));
         playTone(soundOn, 120, 0.25);
         syncRunner(next);
         setScreen('runnerGameOver');
@@ -469,7 +546,7 @@ function App() {
       syncRunner(next);
     }, 100);
     return () => window.clearInterval(timer);
-  }, [runnerBest, screen, soundOn, syncRunner]);
+  }, [runnerBest, screen, soundOn, syncRunner, updateProgress]);
 
   const nextLevel = () => {
     const nextIndex = levelIndex + 1;
@@ -486,14 +563,24 @@ function App() {
   };
 
   if (screen === 'start' || screen === 'howto') {
+    const achievements = [
+      { icon: '🧁', name: 'Modak Collector', description: 'Collect 50 modaks.', unlocked: progress.totalModaks >= 50 },
+      { icon: '🏃', name: 'Distance Hero', description: 'Run 1,000 metres.', unlocked: progress.longestRun >= 1000 },
+      { icon: '🛕', name: 'Temple Explorer', description: 'Complete 3 maze levels.', unlocked: progress.levelsCompleted >= 3 },
+      { icon: '⚡', name: 'Speed Master', description: 'Use 5 power-ups.', unlocked: progress.powerUpsUsed >= 5 },
+      { icon: '🏆', name: 'Festival Champion', description: 'Complete both game modes.', unlocked: progress.mazeCompleted && progress.runCompleted },
+    ];
     return (
-      <main className={`game-shell start-screen ${screen === 'howto' ? 'howto-screen' : ''}`}>
-        <header className="topbar">
+      <main className={`game-shell start-screen hub-screen ${screen === 'howto' ? 'howto-screen' : ''}`}>
+        <header className="topbar hub-topbar">
           <div className="brand" data-testid="brand-mark">
-            <span className="brand-mark" aria-hidden="true">🐘</span>
-            <span className="brand-copy"><strong>Mooshika Maze</strong><small>Ganesha’s Modak Adventure</small></span>
+            <span className="brand-mark" aria-hidden="true">🐭</span>
+            <span className="brand-copy"><strong>Mooshika Festival Adventure</strong><small>Ganesha's Ultimate Modak Challenge</small></span>
           </div>
-          <div className="festival-stamp">A Ganesh Chaturthi game night</div>
+          <div className="hub-toolbar">
+            <div className="festival-stamp">A Ganesh Chaturthi game night</div>
+            <button className="icon-btn" type="button" onClick={toggleSound} aria-pressed={soundOn} data-testid="button-hub-sound">{soundOn ? '🔊 Sound on' : '🔇 Sound off'}</button>
+          </div>
         </header>
         <div className="festival-decor" aria-hidden="true">
           <span className="decor-flower flower-one">✿</span>
@@ -505,45 +592,81 @@ function App() {
           <span className="decor-rangoli">✧ · ✦ · ✧</span>
         </div>
         {screen === 'start' ? (
-          <section className="start-layout" aria-labelledby="game-title">
-            <div className="start-copy">
+          <section className="hub-page" aria-labelledby="game-title">
+            <div className="hub-hero">
               <div className="eyebrow">The temple doors are open</div>
-              <h1 className="game-title" id="game-title">🐭 MOOSHIKA <em>MAZE</em></h1>
-              <p className="game-subtitle">GANESHA'S MODAK ADVENTURE</p>
-              <p className="hero-subtitle">Help Mooshika collect every modak and reach Ganesha before the timer runs out.</p>
-              <div className="hero-actions">
-                <button className="btn btn-primary start-cta" type="button" onClick={startGame} data-testid="button-start-game">START ADVENTURE</button>
-                <button className="btn btn-runner" type="button" onClick={startRunner} data-testid="button-start-run">START RUN <span aria-hidden="true">→</span></button>
-                <button className="btn btn-ghost" type="button" onClick={() => setScreen('howto')} data-testid="button-how-to-play">HOW TO PLAY</button>
+              <h1 className="game-title" id="game-title">🐭 MOOSHIKA <em>FESTIVAL ADVENTURE</em></h1>
+              <p className="game-subtitle">GANESHA'S ULTIMATE MODAK CHALLENGE</p>
+              <p className="hero-subtitle">Two adventures. One festival. Can you help Mooshika complete them both?</p>
+            </div>
+
+            <div className="mode-grid" aria-label="Choose an adventure">
+              <article className="mode-card maze-mode-card">
+                <div className="mode-card-art" aria-hidden="true">🛕<span>🍡</span></div>
+                <div className="mode-card-copy">
+                  <div className="mode-kicker">Adventure one</div>
+                  <h2>Temple Maze</h2>
+                  <p>Collect every modak and reach Ganesha!</p>
+                  <ul className="feature-list">
+                    <li>🧁 Collect Modaks</li><li>⏱️ Beat the Timer</li><li>❤️ 3 Lives</li><li>🏆 Complete All Levels</li>
+                  </ul>
+                  <button className="btn btn-primary mode-card-button" type="button" onClick={startGame} data-testid="button-start-game">PLAY TEMPLE MAZE <span aria-hidden="true">→</span></button>
+                </div>
+              </article>
+              <article className="mode-card run-mode-card">
+                <div className="mode-card-art" aria-hidden="true">🏃<span>✦</span></div>
+                <div className="mode-card-copy">
+                  <div className="mode-kicker">Adventure two</div>
+                  <h2>Modak Run</h2>
+                  <p>Run through the festival and see how far you can go!</p>
+                  <ul className="feature-list">
+                    <li>🧁 Collect Modaks</li><li>🪙 Collect Coins</li><li>🚧 Dodge Obstacles</li><li>⚡ Use Power-Ups</li><li>🏆 Beat Your Best Score</li>
+                  </ul>
+                  <button className="btn btn-runner mode-card-button" type="button" onClick={startRunner} data-testid="button-start-run">PLAY MODAK RUN <span aria-hidden="true">→</span></button>
+                </div>
+              </article>
+            </div>
+
+            <div className="hub-actions">
+              <button className="btn btn-ghost" type="button" onClick={() => setScreen('howto')} data-testid="button-how-to-play">HOW TO PLAY</button>
+            </div>
+
+            <section className="progress-section" aria-labelledby="progress-title">
+              <div className="section-heading">
+                <div><div className="eyebrow">Your festival journey</div><h2 id="progress-title">🏆 My Festival Progress</h2></div>
+                <span className="progress-count">{achievements.filter((achievement) => achievement.unlocked).length} / {achievements.length} unlocked</span>
               </div>
-              <div className="best-score" data-testid="text-best-score">Best festival score <b>{bestScore.toLocaleString()}</b></div>
-            </div>
-            <div className="hero-art" aria-label="Ganesha and Mooshika illustration">
-              <div className="art-halo" />
-              <span className="art-modak one" aria-hidden="true">✦</span>
-              <span className="art-modak two" aria-hidden="true">✦</span>
-              <span className="art-modak three" aria-hidden="true">✦</span>
-              <span className="art-ganesha" aria-hidden="true">🐘</span>
-              <span className="art-mouse" aria-hidden="true">🐭</span>
-              <span className="art-note">Five doors. One offering. A very brave mouse.</span>
-            </div>
+              <div className="progress-stats">
+                <div><span>Temple Maze best</span><b>{Math.max(bestScore, progress.mazeBest).toLocaleString()}</b></div>
+                <div><span>Modak Run best</span><b>{Math.max(runnerBest, progress.runBest).toLocaleString()}</b></div>
+                <div><span>Total modaks</span><b>{progress.totalModaks.toLocaleString()}</b></div>
+                <div><span>Total coins</span><b>{progress.totalCoins.toLocaleString()}</b></div>
+                <div><span>Longest run</span><b>{progress.longestRun.toLocaleString()}m</b></div>
+              </div>
+              <div className="achievement-grid">
+                {achievements.map((achievement) => (
+                  <div className={`achievement-card ${achievement.unlocked ? 'unlocked' : 'locked'}`} key={achievement.name}>
+                    <span className="achievement-icon" aria-hidden="true">{achievement.unlocked ? achievement.icon : '✦'}</span>
+                    <div><b>{achievement.name}</b><small>{achievement.description}</small></div>
+                    <span className="achievement-state">{achievement.unlocked ? 'Unlocked' : 'Locked'}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
           </section>
         ) : (
-          <section className="howto-panel" aria-labelledby="howto-title">
+          <section className="howto-panel howto-modal-panel" aria-labelledby="howto-title">
             <div className="eyebrow">Before you enter</div>
             <h2 id="howto-title">How to play</h2>
-            <ul className="howto-steps">
-              <li>Use Arrow Keys or WASD to move Mooshika.</li>
-              <li>Collect all the modaks.</li>
-              <li>Avoid obstacles.</li>
-              <li>Reach Ganesha after collecting every modak.</li>
-              <li>Complete the level before the timer reaches zero.</li>
-            </ul>
-            <div className="howto-tip">On mobile, use the directional pad below the maze. Press P or Escape to pause. For the new three-lane run, swipe left or right to switch lanes and swipe up or down to jump or slide.</div>
+            <div className="howto-columns">
+              <div><h3>🛕 Temple Maze</h3><p>Use Arrow Keys or WASD to move Mooshika. Collect every modak, avoid obstacles, and reach Ganesha before time runs out.</p></div>
+              <div><h3>🏃 Modak Run</h3><p>Use Arrow Keys or WASD. Left/Right changes lanes, Up jumps, and Down slides. Collect modaks and coins, dodge obstacles, and survive as long as possible.</p></div>
+            </div>
+            <div className="howto-tip">On mobile, use the maze directional pad or swipe on the runner track. Sound can be changed from the hub and is saved on this device.</div>
             <div className="howto-actions">
-              <button className="btn btn-primary" type="button" onClick={startGame} data-testid="button-howto-start">START ADVENTURE</button>
-              <button className="btn btn-runner" type="button" onClick={startRunner} data-testid="button-howto-run">START RUN</button>
-              <button className="btn btn-ghost" type="button" onClick={() => setScreen('start')} data-testid="button-back-home">Back to title</button>
+              <button className="btn btn-primary" type="button" onClick={startGame} data-testid="button-howto-start">PLAY TEMPLE MAZE</button>
+              <button className="btn btn-runner" type="button" onClick={startRunner} data-testid="button-howto-run">PLAY MODAK RUN</button>
+              <button className="btn btn-ghost" type="button" onClick={() => setScreen('start')} data-testid="button-back-home">Back to game hub</button>
             </div>
           </section>
         )}
@@ -589,8 +712,8 @@ function App() {
           </div>
           <div className="runner-toolbar">
             <span className="runner-best">Best <b>{runnerBest.toLocaleString()}</b></span>
-            <button className="icon-btn" type="button" onClick={() => { setSoundOn((current) => !current); playTone(!soundOn, 520, 0.08); }} aria-pressed={soundOn} data-testid="button-runner-sound">{soundOn ? 'Sound on' : 'Sound off'}</button>
-            <button className="icon-btn" type="button" onClick={() => setScreen('start')} data-testid="button-runner-menu">Main menu</button>
+            <button className="icon-btn" type="button" onClick={toggleSound} aria-pressed={soundOn} data-testid="button-runner-sound">{soundOn ? '🔊 Sound on' : '🔇 Sound off'}</button>
+            <button className="icon-btn" type="button" onClick={() => setScreen('start')} data-testid="button-runner-menu">🏠 Game hub</button>
           </div>
         </header>
 
@@ -673,7 +796,8 @@ function App() {
               </div>
               <div className="modal-actions">
                 <button className="btn btn-primary" type="button" onClick={startRunner} data-testid="button-run-again">Play again</button>
-                <button className="btn btn-ghost" type="button" onClick={() => setScreen('start')} data-testid="button-run-home">Main menu</button>
+                <button className="btn btn-ghost" type="button" onClick={() => setScreen('start')} data-testid="button-run-home">🏠 Game hub</button>
+                <button className="btn btn-ghost" type="button" onClick={startGame} data-testid="button-run-maze">🛕 Temple Maze</button>
               </div>
             </div>
           </div>
@@ -705,7 +829,8 @@ function App() {
           <div className="toolbar">
             <button className="icon-btn" type="button" onClick={() => setScreen(paused ? 'playing' : 'paused')} data-testid="button-pause">{paused ? 'Resume' : 'Pause'}</button>
             <button className="icon-btn" type="button" onClick={startGame} data-testid="button-restart">Restart</button>
-            <button className="icon-btn" type="button" onClick={() => { setSoundOn((current) => !current); playTone(!soundOn, 520, 0.08); }} aria-pressed={soundOn} data-testid="button-sound">{soundOn ? 'Sound on' : 'Sound off'}</button>
+            <button className="icon-btn" type="button" onClick={toggleSound} aria-pressed={soundOn} data-testid="button-sound">{soundOn ? '🔊 Sound on' : '🔇 Sound off'}</button>
+            <button className="icon-btn" type="button" onClick={() => setScreen('start')} data-testid="button-maze-hub">🏠 Game hub</button>
           </div>
         </div>
 
@@ -784,6 +909,7 @@ function App() {
             <div className="modal-actions">
               <button className="btn btn-primary" type="button" onClick={() => setScreen('playing')} data-testid="button-resume">Resume</button>
               <button className="btn btn-ghost" type="button" onClick={startGame} data-testid="button-pause-restart">Restart run</button>
+                <button className="btn btn-ghost" type="button" onClick={() => setScreen('start')} data-testid="button-pause-home">🏠 Game hub</button>
             </div>
           </div>
         </div>
@@ -799,6 +925,7 @@ function App() {
             <div className="modal-score">+{levelBonus.toLocaleString()} points</div>
             <div className="modal-actions">
               <button className="btn btn-primary" type="button" onClick={nextLevel} data-testid="button-next-level">Enter chamber {levelIndex + 2}</button>
+                <button className="btn btn-ghost" type="button" onClick={() => setScreen('start')} data-testid="button-level-home">🏠 Game hub</button>
             </div>
           </div>
         </div>
@@ -814,7 +941,8 @@ function App() {
             <div className="modal-score">Score {finalScore.toLocaleString()}</div>
             <div className="modal-actions">
               <button className="btn btn-primary" type="button" onClick={startGame} data-testid="button-try-again">Try again</button>
-              <button className="btn btn-ghost" type="button" onClick={() => setScreen('start')} data-testid="button-gameover-home">Home</button>
+                <button className="btn btn-ghost" type="button" onClick={() => setScreen('start')} data-testid="button-gameover-home">🏠 Game hub</button>
+                <button className="btn btn-ghost" type="button" onClick={startRunner} data-testid="button-gameover-run">🏃 Modak Run</button>
             </div>
           </div>
         </div>
@@ -824,19 +952,23 @@ function App() {
         <div className="overlay" role="dialog" aria-modal="true" aria-labelledby="final-title">
           <div className="modal-panel">
             <span className="modal-art" aria-hidden="true">🐘</span>
-            <div className="modal-kicker">Festival complete</div>
-            <h2 id="final-title">The offering is delivered</h2>
+            <div className="modal-kicker">Temple adventure complete</div>
+            <h2 id="final-title">🎉 Temple Adventure Complete!</h2>
             <p>Five chambers, every modak, and a very happy Ganesha.</p>
             <div className="results-grid">
               <div className="result-box"><span>Final score</span><strong>{finalScore.toLocaleString()}</strong></div>
               <div className="result-box"><span>Best score</span><strong>{bestScore.toLocaleString()}</strong></div>
+              <div className="result-box"><span>Modaks collected</span><strong>{mazeRunModaks}</strong></div>
+              <div className="result-box"><span>Time bonus</span><strong>{timeBonusTotal.toLocaleString()}</strong></div>
+              <div className="result-box"><span>Levels completed</span><strong>{LEVEL_NAMES.length}</strong></div>
             </div>
             <div className="progress-list">
               {LEVEL_NAMES.map((name, index) => <div className="progress-row" key={name}><span className="progress-dot" /><span>Chamber {index + 1}: {name}</span><b>cleared</b></div>)}
             </div>
             <div className="modal-actions">
               <button className="btn btn-primary" type="button" onClick={startGame} data-testid="button-play-again">Play again</button>
-              <button className="btn btn-ghost" type="button" onClick={() => setScreen('start')} data-testid="button-final-home">Home</button>
+              <button className="btn btn-ghost" type="button" onClick={() => setScreen('start')} data-testid="button-final-home">🏠 Game hub</button>
+              <button className="btn btn-runner" type="button" onClick={startRunner} data-testid="button-final-run">🏃 Modak Run</button>
             </div>
           </div>
         </div>

@@ -1,0 +1,456 @@
+I already have TWO working game modes in this project:
+
+1. MOOSHIKA MAZE
+2. MOOSHIKA: MODAK RUN
+
+IMPORTANT:
+Do NOT delete either game.
+Do NOT rebuild the games from scratch.
+Do NOT remove existing gameplay, scoring, levels, controls, animations, or working features.
+
+Your job is to transform the CURRENT project into one polished Ganesh Chaturthi game hub containing both game modes.
+
+==================================================
+GAME TITLE
+==================================================
+
+Use the main title:
+
+🐭 MOOSHIKA FESTIVAL ADVENTURE
+
+Subtitle:
+
+"Ganesha's Ultimate Modak Challenge"
+
+Short description:
+
+"Two adventures. One festival. Can you help Mooshika complete them both?"
+
+Keep the existing warm Ganesh Chaturthi visual style.
+
+==================================================
+MAIN MENU / GAME HUB
+==================================================
+
+Create a polished main menu that appears when the player opens the game.
+
+Show:
+
+🐭 MOOSHIKA FESTIVAL ADVENTURE
+
+"Ganesha's Ultimate Modak Challenge"
+
+Then display two large game-mode cards.
+
+--------------------------------
+MODE 1
+--------------------------------
+
+🛕 TEMPLE MAZE
+
+"Collect every modak and reach Ganesha!"
+
+Button:
+
+PLAY TEMPLE MAZE →
+
+Show small feature labels:
+
+🧁 Collect Modaks
+⏱️ Beat the Timer
+❤️ 3 Lives
+🏆 Complete All Levels
+
+--------------------------------
+MODE 2
+--------------------------------
+
+🏃 MODAK RUN
+
+"Run through the festival and see how far you can go!"
+
+Button:
+
+PLAY MODAK RUN →
+
+Show:
+
+🧁 Collect Modaks
+🪙 Collect Coins
+🚧 Dodge Obstacles
+⚡ Use Power-Ups
+🏆 Beat Your Best Score
+
+Make the two cards visually distinct but part of the same game.
+
+==================================================
+TEMPLE MAZE MODE
+==================================================
+
+Keep the CURRENT Mooshika Maze gameplay.
+
+Do not remove existing features.
+
+Make sure it has:
+
+- Maze levels
+- Modak collection
+- Timer
+- Lives
+- Score
+- Obstacles
+- Ganesha goal
+- Level progression
+- Restart
+- Pause
+
+Add a button:
+
+🏠 GAME HUB
+
+This must return the player to the main menu.
+
+When the player completes the maze, show:
+
+🎉 TEMPLE ADVENTURE COMPLETE!
+
+Show:
+
+Score
+Modaks collected
+Levels completed
+Time bonus
+
+Buttons:
+
+PLAY AGAIN
+GAME HUB
+MODAK RUN
+
+==================================================
+MODAK RUN MODE
+==================================================
+
+Keep the CURRENT Mooshika endless runner gameplay.
+
+Do not remove existing features.
+
+Make sure it has:
+
+- 3-lane movement
+- Left/right movement
+- Jump
+- Slide
+- Modaks
+- Coins
+- Obstacles
+- Power-ups
+- Increasing speed
+- Distance
+- Score
+- Best score
+- Game over
+- Restart
+
+Add a button:
+
+🏠 GAME HUB
+
+This returns to the main menu.
+
+When the player finishes a run, show:
+
+🏃 RUN COMPLETE!
+
+Show:
+
+Distance
+Score
+Best Score
+Modaks
+Coins
+
+Buttons:
+
+PLAY AGAIN
+GAME HUB
+TEMPLE MAZE
+
+==================================================
+SHARED PROGRESSION
+==================================================
+
+Create a simple shared progress system using localStorage.
+
+Track:
+
+- Best Temple Maze score
+- Best Modak Run score
+- Total modaks collected
+- Total coins collected
+- Maze levels completed
+- Longest run distance
+
+Do NOT require an account or internet connection.
+
+Display a small:
+
+🏆 MY FESTIVAL PROGRESS
+
+section on the main menu.
+
+Example:
+
+TEMPLE MAZE BEST: 1,250
+MODAK RUN BEST: 2,430
+TOTAL MODAKS: 87
+LONGEST RUN: 1,240m
+
+==================================================
+ACHIEVEMENTS
+==================================================
+
+Add a simple achievement system.
+
+Achievements:
+
+🧁 MODAK COLLECTOR
+Collect 50 modaks.
+
+🏃 DISTANCE HERO
+Run 1,000 metres.
+
+🛕 TEMPLE EXPLORER
+Complete 3 maze levels.
+
+⚡ SPEED MASTER
+Use 5 power-ups.
+
+🏆 FESTIVAL CHAMPION
+Complete both game modes at least once.
+
+Show locked achievements as silhouettes or faded cards.
+
+Unlock them automatically using localStorage.
+
+==================================================
+UNIFIED VISUAL DESIGN
+==================================================
+
+Both games must look like parts of the SAME game.
+
+Use the existing visual language:
+
+- Warm cream backgrounds
+- Orange/gold festival colors
+- Deep purple text
+- Marigold flowers
+- Diyas
+- Rangoli patterns
+- Modaks
+- Temple decorations
+- Soft glowing effects
+- Rounded cards
+- Smooth animations
+
+Do not make the two games look completely unrelated.
+
+==================================================
+NAVIGATION
+==================================================
+
+The player must always be able to return to:
+
+🏠 GAME HUB
+
+Navigation should work like:
+
+GAME HUB
+   ↓
+TEMPLE MAZE
+   ↓
+RESULT
+   ↓
+GAME HUB
+
+and:
+
+GAME HUB
+   ↓
+MODAK RUN
+   ↓
+RESULT
+   ↓
+GAME HUB
+
+Also allow:
+
+Temple Maze → Modak Run
+
+and:
+
+Modak Run → Temple Maze
+
+without reloading the page unnecessarily.
+
+==================================================
+FIRST-TIME PLAYER EXPERIENCE
+==================================================
+
+When the game is opened for the first time:
+
+Show the main hub.
+
+Do NOT immediately start either game.
+
+The player chooses:
+
+🛕 TEMPLE MAZE
+
+or
+
+🏃 MODAK RUN
+
+==================================================
+HOW TO PLAY
+==================================================
+
+Add a HOW TO PLAY button to the main hub.
+
+Create a beautiful modal explaining both modes.
+
+TEMPLE MAZE:
+
+"Use Arrow Keys or WASD to move Mooshika.
+Collect every modak.
+Avoid obstacles.
+Reach Ganesha before time runs out."
+
+MODAK RUN:
+
+"Use Arrow Keys or WASD.
+Left/Right to change lanes.
+Up to jump.
+Down to slide.
+Collect modaks and coins.
+Avoid obstacles.
+Survive as long as possible."
+
+Also explain mobile swipe controls if they already exist.
+
+==================================================
+SOUND
+==================================================
+
+Keep the existing sound system.
+
+Add a global:
+
+🔊 SOUND ON/OFF
+
+setting.
+
+Store the setting in localStorage.
+
+Do not require external audio files.
+
+==================================================
+MOBILE RESPONSIVENESS
+==================================================
+
+The main game hub must work on:
+
+Desktop
+Laptop
+Tablet
+Mobile
+
+Cards should stack vertically on small screens.
+
+Buttons must be large enough to tap.
+
+Do not allow important UI elements to go off-screen.
+
+==================================================
+LOADING / PERFORMANCE
+==================================================
+
+IMPORTANT:
+
+Do not use external image URLs that could fail.
+
+Prefer:
+
+CSS
+SVG
+Canvas
+Emoji
+Procedural graphics
+
+Make the game work even if the internet connection is unavailable after the page loads.
+
+Avoid unnecessary libraries.
+
+==================================================
+POLISH
+==================================================
+
+Add subtle animations to the main hub:
+
+- Floating modaks
+- Moving diyas
+- Gentle sparkle effects
+- Hover effects on game cards
+- Button animations
+
+But do NOT make the screen too busy.
+
+The player should immediately understand:
+
+"This is one game with two different adventures."
+
+==================================================
+FINAL TESTING
+==================================================
+
+Before finishing, test EVERYTHING.
+
+TEST:
+
+1. Game opens to Game Hub.
+2. Temple Maze button works.
+3. Modak Run button works.
+4. Temple Maze gameplay works.
+5. Modak Run gameplay works.
+6. Game Hub button works from both games.
+7. Result screens work.
+8. Play Again works.
+9. Score works.
+10. Best score saves.
+11. localStorage progress saves.
+12. Achievements unlock correctly.
+13. How To Play opens and closes.
+14. Sound toggle works.
+15. Mobile controls work.
+16. No buttons overlap.
+17. No horizontal scrolling.
+18. No JavaScript console errors.
+19. Refreshing the page does not destroy saved high scores.
+20. Both games can be played independently.
+
+IMPORTANT:
+Preserve all existing working game logic.
+
+If there is already code for a feature, reuse and improve it instead of creating a duplicate system.
+
+Do not remove working features just to simplify the project.
+
+The final result should feel like a polished ORIGINAL Ganesh Chaturthi game collection made by a student:
+
+🐭 MOOSHIKA FESTIVAL ADVENTURE
+
+🛕 Temple Maze
++
+🏃 Modak Run
+
+Make the experience fun, colorful, easy to understand, and suitable for a game design contest.
