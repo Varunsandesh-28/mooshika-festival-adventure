@@ -842,3 +842,181 @@ button:focus-visible { outline: 3px solid hsl(42 86% 58%); outline-offset: 3px; 
   .howto-columns { grid-template-columns: 1fr; }
   .howto-modal-panel { margin-top: 3vh; }
 }
+
+/* MODAK RUN VISUAL UPGRADE — render-only styling; gameplay state remains unchanged */
+.runner-shell.runner-scene-garden .runner-sky {
+  background: linear-gradient(180deg, hsl(277 43% 25%) 0%, hsl(277 44% 33%) 42%, hsl(24 67% 43%) 74%, hsl(36 76% 51%) 100%);
+}
+.runner-shell.runner-scene-street .runner-sky {
+  background: linear-gradient(180deg, hsl(277 47% 20%) 0%, hsl(277 48% 29%) 40%, hsl(13 61% 34%) 72%, hsl(24 69% 44%) 100%);
+}
+.runner-shell.runner-scene-grand-temple .runner-sky {
+  background: linear-gradient(180deg, hsl(277 49% 16%) 0%, hsl(277 50% 24%) 38%, hsl(13 58% 29%) 70%, hsl(32 75% 42%) 100%);
+}
+.runner-shell.runner-scene-golden-night .runner-sky {
+  background: linear-gradient(180deg, hsl(277 54% 11%) 0%, hsl(277 52% 18%) 42%, hsl(13 57% 25%) 71%, hsl(37 77% 40%) 100%);
+}
+.runner-shell.runner-scene-garden .runner-stage { box-shadow: 0 22px 55px hsl(277 38% 18% / .22), 0 0 50px hsl(42 92% 62% / .18), inset 0 0 0 6px hsl(42 92% 61% / .18); }
+.runner-shell.runner-scene-grand-temple .runner-stage, .runner-shell.runner-scene-golden-night .runner-stage { box-shadow: 0 22px 55px hsl(277 38% 18% / .3), 0 0 65px hsl(42 92% 62% / .24), inset 0 0 0 6px hsl(42 92% 61% / .2); }
+.runner-sky::before {
+  content: "";
+  position: absolute;
+  inset: 34% 0 0;
+  opacity: .34;
+  background:
+    linear-gradient(90deg, transparent 0 10%, hsl(42 92% 70% / .16) 10.2% 10.8%, transparent 11% 88%, hsl(42 92% 70% / .16) 88.2% 88.8%, transparent 89%),
+    linear-gradient(180deg, transparent 0 54%, hsl(277 38% 10% / .24) 54.5% 55%, transparent 55.5%);
+  pointer-events: none;
+}
+.runner-temple {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 21%;
+  transform: translateX(-50%);
+  font-size: clamp(74px, 14vw, 148px);
+  line-height: .8;
+  filter: drop-shadow(0 0 18px hsl(42 92% 66% / .46)) drop-shadow(0 17px 0 hsl(277 38% 12% / .24));
+  opacity: .92;
+  animation: temple-breathe 4.5s ease-in-out infinite;
+}
+.runner-garland {
+  position: absolute;
+  z-index: 3;
+  top: 13%;
+  color: hsl(42 97% 76%);
+  font-size: clamp(17px, 2.5vw, 28px);
+  letter-spacing: .06em;
+  white-space: nowrap;
+  text-shadow: 0 0 12px hsl(42 96% 70% / .8);
+  animation: garland-sway 4s ease-in-out infinite;
+}
+.garland-a { left: 4%; transform: rotate(-6deg); }
+.garland-b { right: 4%; transform: rotate(6deg); animation-delay: -1.7s; }
+.runner-bells {
+  position: absolute;
+  z-index: 3;
+  top: 32%;
+  width: 100%;
+  color: hsl(42 97% 76%);
+  text-align: center;
+  font-size: clamp(16px, 2.2vw, 26px);
+  letter-spacing: .2em;
+  filter: drop-shadow(0 0 8px hsl(42 92% 68% / .76));
+  animation: bell-glow 2.2s ease-in-out infinite;
+}
+.runner-scenery-drum {
+  position: absolute;
+  z-index: 2;
+  bottom: 32%;
+  font-size: clamp(34px, 5vw, 58px);
+  filter: drop-shadow(0 7px 0 hsl(277 38% 12% / .26));
+  animation: scenery-drift 5s ease-in-out infinite;
+}
+.scenery-drum-a { left: 11%; }.scenery-drum-b { right: 11%; animation-delay: -2.4s; }
+.runner-petal {
+  position: absolute;
+  z-index: 6;
+  color: hsl(4 82% 73%);
+  font-size: 18px;
+  text-shadow: 0 0 9px hsl(42 92% 70% / .7);
+  animation: petal-fall 5s linear infinite;
+}
+.petal-a { left: 18%; top: 8%; animation-delay: -1.5s; }.petal-b { left: 78%; top: 18%; animation-delay: -3.2s; }
+.petal-c { left: 58%; top: 4%; animation-delay: -.8s; color: hsl(42 92% 77%); }.petal-d { left: 34%; top: 27%; animation-delay: -4s; }
+.runner-lights { animation: lights-pulse 1.8s ease-in-out infinite; }
+.runner-banner { box-shadow: 0 4px 0 hsl(277 38% 11% / .2); }
+.runner-track {
+  box-shadow: inset 0 22px 30px hsl(277 38% 12% / .2), inset 0 -10px 22px hsl(42 91% 65% / .13);
+}
+.runner-track::before {
+  background-size: 100% 90px;
+  animation: road-scroll .7s linear infinite;
+}
+.track-pillars {
+  position: absolute;
+  z-index: 2;
+  top: 7%;
+  color: hsl(42 80% 65% / .46);
+  font-family: var(--app-font-mono);
+  font-size: clamp(20px, 3vw, 42px);
+  letter-spacing: .25em;
+  text-shadow: 0 0 11px hsl(42 92% 68% / .42);
+  transform: perspective(160px) rotateX(18deg);
+}
+.track-pillars-left { left: 5%; }.track-pillars-right { right: 5%; }
+.lane-rangoli {
+  position: absolute;
+  top: 43%;
+  left: 50%;
+  color: hsl(42 92% 72% / .32);
+  font-size: 27px;
+  transform: translateX(-50%);
+  animation: rangoli-shimmer 2.6s ease-in-out infinite;
+}
+.lane-1 .lane-rangoli { animation-delay: -.8s; }.lane-2 .lane-rangoli { animation-delay: -1.6s; }
+.runner-object { will-change: opacity; }
+.runner-object-modak span, .runner-object-golden span { animation: offering-float 1.5s ease-in-out infinite; }
+.runner-object-coin span { display: block; animation: coin-spin .9s linear infinite; }
+.runner-object-speed span, .runner-object-blessing span, .runner-object-magnet span, .runner-object-dash span { animation: power-orbit 1.2s ease-in-out infinite; }
+.runner-object-obstacle span, .runner-object-arch span { animation: obstacle-pulse 1.25s ease-in-out infinite; }
+.runner-object-modak { background: radial-gradient(circle, hsl(42 97% 86% / .23), hsl(13 52% 26% / .9)); }
+.runner-object-coin { background: radial-gradient(circle, hsl(42 97% 79% / .3), hsl(277 38% 18% / .9)); }
+.runner-object-obstacle, .runner-object-arch { box-shadow: 0 0 18px hsl(5 70% 55% / .4), 0 5px 0 hsl(277 38% 12% / .35); }
+.runner-player { filter: drop-shadow(0 12px 4px hsl(277 38% 10% / .42)); }
+.mouse-face { animation: mouse-run .42s ease-in-out infinite; }
+.mouse-ear { animation: ear-bob .42s ease-in-out infinite; }
+.ear-right { animation-delay: -.21s; }
+.mouse-shadow {
+  position: absolute;
+  z-index: 0;
+  bottom: -2px;
+  left: 50%;
+  width: 48px;
+  height: 10px;
+  border-radius: 50%;
+  background: hsl(277 38% 10% / .4);
+  transform: translateX(-50%);
+  animation: shadow-breathe .42s ease-in-out infinite;
+}
+.mouse-scarf {
+  position: absolute;
+  z-index: 3;
+  right: 1px;
+  bottom: 8px;
+  width: 17px;
+  height: 10px;
+  border-radius: 3px 9px 4px 4px;
+  color: transparent;
+  background: hsl(13 72% 48%);
+  transform: rotate(14deg);
+}
+.runner-power-strip span { box-shadow: 0 0 14px hsl(42 92% 68% / .22); }
+.runner-event { box-shadow: 0 0 18px hsl(42 92% 68% / .18); }
+
+@keyframes temple-breathe { 0%, 100% { transform: translateX(-50%) translateY(0) scale(1); } 50% { transform: translateX(-50%) translateY(-4px) scale(1.02); } }
+@keyframes garland-sway { 0%, 100% { margin-top: 0; } 50% { margin-top: 4px; } }
+@keyframes bell-glow { 0%, 100% { opacity: .62; } 50% { opacity: 1; text-shadow: 0 0 18px hsl(42 92% 72%); } }
+@keyframes scenery-drift { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-6px) rotate(2deg); } }
+@keyframes petal-fall { 0% { opacity: 0; transform: translate3d(0, -16px, 0) rotate(0); } 15% { opacity: .9; } 100% { opacity: 0; transform: translate3d(22px, 290px, 0) rotate(220deg); } }
+@keyframes lights-pulse { 0%, 100% { opacity: .64; } 50% { opacity: 1; } }
+@keyframes road-scroll { from { background-position: 0 0; } to { background-position: 0 90px; } }
+@keyframes rangoli-shimmer { 0%, 100% { opacity: .45; transform: translateX(-50%) scale(.92); } 50% { opacity: .9; transform: translateX(-50%) scale(1.08); } }
+@keyframes offering-float { 0%, 100% { transform: translateY(0) rotate(-4deg); } 50% { transform: translateY(-5px) rotate(4deg); } }
+@keyframes coin-spin { 0% { transform: rotateY(0); } 100% { transform: rotateY(360deg); } }
+@keyframes power-orbit { 0%, 100% { transform: scale(.9) rotate(-8deg); } 50% { transform: scale(1.12) rotate(8deg); } }
+@keyframes obstacle-pulse { 0%, 100% { opacity: .76; } 50% { opacity: 1; } }
+@keyframes mouse-run { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-4px) rotate(2deg); } }
+@keyframes ear-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+@keyframes shadow-breathe { 0%, 100% { transform: translateX(-50%) scaleX(1); opacity: .45; } 50% { transform: translateX(-50%) scaleX(.78); opacity: .25; } }
+
+@media (max-width: 600px) {
+  .runner-temple { top: 22%; font-size: 82px; }
+  .runner-garland { font-size: 13px; }
+  .runner-bells { top: 35%; font-size: 15px; }
+  .runner-scenery-drum { bottom: 34%; font-size: 35px; }
+  .track-pillars { font-size: 20px; }
+  .lane-rangoli { font-size: 20px; }
+  .runner-stat span { white-space: nowrap; }
+  .runner-stat span i { font-style: normal; }
+}

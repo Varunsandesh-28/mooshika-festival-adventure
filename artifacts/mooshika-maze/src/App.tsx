@@ -175,6 +175,13 @@ function App() {
   const completedCount = collected.length;
   const runnerSectionNames = ['Marigold Mile', 'Temple Bridge', 'Rangoli Square', 'Diyas by the River', 'Golden Gate'];
   const runnerSection = runnerSectionNames[Math.floor(runnerView.distance / 160) % runnerSectionNames.length];
+  const runnerScene = runnerView.distance < 500
+    ? { key: 'garden', name: 'Festival Garden' }
+    : runnerView.distance < 1000
+      ? { key: 'street', name: 'Temple Street' }
+      : runnerView.distance < 2000
+        ? { key: 'grand-temple', name: 'Grand Temple Road' }
+        : { key: 'golden-night', name: 'Golden Festival Night' };
   const showEvent = useCallback((message: string) => {
     setLastEvent(message);
     if (eventTimer.current) window.clearTimeout(eventTimer.current);
@@ -704,7 +711,7 @@ function App() {
       return '↗';
     };
     return (
-      <main className="game-shell runner-shell">
+      <main className={`game-shell runner-shell runner-scene-${runnerScene.key}`}>
         <header className="topbar runner-topbar">
           <div className="brand" data-testid="runner-brand">
             <span className="brand-mark" aria-hidden="true">M</span>
@@ -724,15 +731,15 @@ function App() {
               <h1>MOOSHIKA: <em>MODAK RUN</em></h1>
               <p>GANESHA'S FESTIVAL ADVENTURE</p>
             </div>
-            <div className="runner-section-tag"><span>Now passing</span><b>{runnerSection}</b></div>
+            <div className="runner-section-tag"><span>Now passing</span><b>{runnerScene.name}</b></div>
           </div>
           <div className="runner-hud" aria-label="Run status">
-            <div className="runner-stat"><span>Distance</span><b data-testid="status-run-distance">{Math.floor(runnerView.distance)}m</b></div>
-            <div className="runner-stat"><span>Score</span><b data-testid="status-run-score">{runnerView.score.toLocaleString()}</b></div>
-            <div className="runner-stat"><span>Modaks</span><b data-testid="status-run-modaks">{runnerView.modaks}</b></div>
-            <div className="runner-stat"><span>Coins</span><b data-testid="status-run-coins">{runnerView.coins}</b></div>
-            <div className="runner-stat combo-stat"><span>Combo</span><b data-testid="status-run-combo">×{runnerView.combo}</b></div>
-            <div className="runner-stat"><span>Best</span><b data-testid="status-run-best">{runnerBest.toLocaleString()}</b></div>
+            <div className="runner-stat"><span><i aria-hidden="true">📏</i> Distance</span><b data-testid="status-run-distance">{Math.floor(runnerView.distance)}m</b></div>
+            <div className="runner-stat"><span><i aria-hidden="true">⭐</i> Score</span><b data-testid="status-run-score">{runnerView.score.toLocaleString()}</b></div>
+            <div className="runner-stat"><span><i aria-hidden="true">🧁</i> Modaks</span><b data-testid="status-run-modaks">{runnerView.modaks}</b></div>
+            <div className="runner-stat"><span><i aria-hidden="true">🪙</i> Coins</span><b data-testid="status-run-coins">{runnerView.coins}</b></div>
+            <div className="runner-stat combo-stat"><span><i aria-hidden="true">🔥</i> Combo</span><b data-testid="status-run-combo">×{runnerView.combo}</b></div>
+            <div className="runner-stat"><span><i aria-hidden="true">🏆</i> Best</span><b data-testid="status-run-best">{runnerBest.toLocaleString()}</b></div>
           </div>
 
           <div className={`runner-stage ${runnerView.jumpTimer > 0 ? 'is-jumping' : ''} ${runnerView.slideTimer > 0 ? 'is-sliding' : ''}`} onTouchStart={touchStart} onTouchEnd={touchEnd}>
@@ -741,6 +748,12 @@ function App() {
               <span className="runner-banner banner-a">GANPATI BAPPA MORIYA</span>
               <span className="runner-banner banner-b">ॐ　✿　ॐ　✿　ॐ</span>
               <span className="runner-tree tree-a">♣</span><span className="runner-tree tree-b">♣</span>
+              <span className="runner-temple" aria-hidden="true">🛕</span>
+              <span className="runner-garland garland-a">🌼•🌼•🌼•🌼•🌼</span>
+              <span className="runner-garland garland-b">🌼•🌼•🌼•🌼•🌼</span>
+              <span className="runner-bells">🔔　🔔　🔔</span>
+              <span className="runner-scenery-drum scenery-drum-a">🥁</span><span className="runner-scenery-drum scenery-drum-b">🥁</span>
+              <span className="runner-petal petal-a">✿</span><span className="runner-petal petal-b">✿</span><span className="runner-petal petal-c">✦</span><span className="runner-petal petal-d">✿</span>
             </div>
             <div className="runner-arch arch-back" aria-hidden="true">⌒</div>
             <div className="runner-arch arch-front" aria-hidden="true">⌒</div>
@@ -748,7 +761,8 @@ function App() {
             <div className="runner-track">
               <div className="track-rangoli" aria-hidden="true">✧　·　✦　·　✧</div>
               <div className="track-bridge" aria-hidden="true">╱╲╱╲╱╲╱╲╱╲</div>
-              {[0, 1, 2].map((lane) => <div className={`runner-lane lane-${lane}`} key={lane}><span className="lane-diya">◒</span><span className="lane-flower">✿</span></div>)}
+              <div className="track-pillars track-pillars-left" aria-hidden="true">▐　▐　▐</div><div className="track-pillars track-pillars-right" aria-hidden="true">▌　▌　▌</div>
+              {[0, 1, 2].map((lane) => <div className={`runner-lane lane-${lane}`} key={lane}><span className="lane-diya">◒</span><span className="lane-flower">✿</span><span className="lane-rangoli">✧</span></div>)}
               {runnerView.objects.map((object) => (
                 <div
                   className={`runner-object runner-object-${object.kind} ${object.hit ? 'collected' : ''}`}
@@ -760,7 +774,7 @@ function App() {
                 </div>
               ))}
               <div className={`runner-player lane-position-${runnerView.lane}`} aria-label="Mooshika runner">
-                <span className="mouse-ear ear-left" /><span className="mouse-ear ear-right" /><span className="mouse-face">M</span>
+                <span className="mouse-shadow" aria-hidden="true" /><span className="mouse-ear ear-left" /><span className="mouse-ear ear-right" /><span className="mouse-scarf" aria-hidden="true">•</span><span className="mouse-face">M</span>
               </div>
             </div>
             <div className="runner-event" aria-live="polite" data-testid="status-run-event">{runnerView.eventMessage}</div>

@@ -1,0 +1,317 @@
+🚨 CRITICAL: PROTECT MY EXISTING GAME
+
+My project contains TWO working games:
+
+1. 🛕 MOOSHIKA MAZE
+2. 🏃 MOOSHIKA: MODAK RUN
+
+I ONLY want to improve the GRAPHICS of MOOSHIKA: MODAK RUN.
+
+DO NOT delete, hide, disable, rename, replace, rebuild, or modify MOOSHIKA MAZE.
+
+DO NOT modify the Game Hub.
+
+DO NOT modify Temple Maze gameplay, graphics, controls, levels, scoring, timer, lives, or result screen.
+
+Before making changes, inspect the project and identify exactly which files/code belong to Modak Run.
+
+If you are unsure whether code belongs to Temple Maze or Modak Run, DO NOT change it.
+
+==================================================
+MODAK RUN GRAPHICS UPGRADE ONLY
+==================================================
+
+Keep 100% of the existing Modak Run gameplay:
+
+- 3-lane movement
+- Left/right movement
+- Jump
+- Slide
+- Modak collection
+- Coin collection
+- Obstacles
+- Power-ups
+- Score
+- Distance
+- Combo
+- Speed increase
+- Festival Rush
+- Game Over
+- Best Score
+- Restart
+- Mobile controls
+
+Do NOT change how any of these features work.
+
+ONLY improve their visual appearance.
+
+==================================================
+NEW VISUAL STYLE
+==================================================
+
+Make Modak Run look like a polished, colorful Ganesh Chaturthi festival endless runner.
+
+Create a beautiful temple road with:
+
+🛕 Large temple in the distance
+🪔 Glowing diyas
+🌺 Marigold garlands
+🔔 Temple bells
+🎨 Rangoli patterns
+🏮 Festival decorations
+🌳 Trees and gardens
+🌸 Flower petals
+✨ Sparkles
+🎉 Festival banners
+🥁 Decorative drums
+🛕 Temple pillars
+🧁 Modaks
+
+Use the existing warm purple, orange, gold and cream color style.
+
+==================================================
+THREE-LANE ROAD
+==================================================
+
+Make the three lanes visually clear.
+
+Create a strong perspective/depth effect so the road appears to extend toward the temple.
+
+Add beautiful lane decorations and rangoli patterns.
+
+Keep the existing 3-lane movement logic exactly unchanged.
+
+==================================================
+MOOSHIKA
+==================================================
+
+Keep the existing Mooshika character.
+
+Improve ONLY its visual presentation.
+
+Add:
+
+- Smooth running animation
+- Small movement/bobbing effect
+- Soft shadow
+- Better lighting
+- Small festive decoration if it does not interfere with gameplay
+
+Do NOT replace the character or change its movement logic.
+
+==================================================
+MODAKS AND COINS
+==================================================
+
+Keep all existing values and collection logic.
+
+Improve graphics only.
+
+Modaks:
+- Golden/cream appearance
+- Glow
+- Floating animation
+- Sparkle when collected
+
+Coins:
+- Gold appearance
+- Rotation
+- Glow
+- Collection sparkle
+
+==================================================
+OBSTACLES
+==================================================
+
+Keep existing obstacles and collision detection.
+
+Improve only their graphics.
+
+Make them look like:
+
+- Festival drums
+- Temple barriers
+- Flower decorations
+- Festival boxes
+- Rangoli barriers
+
+Make them colorful and easy to recognize.
+
+==================================================
+POWER-UPS
+==================================================
+
+Keep all existing power-up behavior exactly the same.
+
+Improve only their appearance.
+
+Use glowing visual effects for:
+
+⚡ Speed Boost
+🛡️ Ganesha Blessing
+🧲 Modak Magnet
+✨ Divine Dash
+
+==================================================
+HUD
+==================================================
+
+Keep all existing HUD information and calculations.
+
+Only redesign the appearance.
+
+Make:
+
+🧁 Modaks
+🪙 Coins
+⭐ Score
+📏 Distance
+🔥 Combo
+⚡ Power-up indicator
+⏸️ Pause
+
+look clean, modern and festival-themed.
+
+==================================================
+FESTIVAL RUSH
+==================================================
+
+Keep the existing Festival Rush mechanics exactly unchanged.
+
+Only improve its visual presentation with:
+
+- Brighter lights
+- More particles
+- Flower petals
+- Temple glow
+- Festival effects
+
+==================================================
+BACKGROUND AND DEPTH
+==================================================
+
+Add:
+
+- Parallax background
+- Moving scenery
+- Perspective
+- Shadows
+- Lighting
+- Particles
+- Objects becoming larger as they approach
+
+Make the player feel like they are running forward.
+
+Do NOT change movement physics.
+
+==================================================
+ENVIRONMENT
+==================================================
+
+Gradually change the scenery based on the EXISTING distance system.
+
+Example:
+
+0–500m → Festival Garden
+
+500–1000m → Temple Street
+
+1000–2000m → Grand Temple Road
+
+2000m+ → Golden Festival Night
+
+This must be visual only.
+
+DO NOT change difficulty, speed calculations or scoring.
+
+==================================================
+MOBILE
+==================================================
+
+Keep existing swipe controls.
+
+Make the visual design responsive for:
+
+Desktop
+Laptop
+Tablet
+Mobile
+
+Do not allow UI elements to overlap or go off-screen.
+
+==================================================
+PERFORMANCE
+==================================================
+
+Keep the game smooth.
+
+Prefer:
+
+- CSS
+- SVG
+- Canvas
+- Procedural graphics
+- Existing local assets
+
+Do NOT use copyrighted Temple Run assets.
+
+Do NOT use large external image URLs.
+
+==================================================
+ABSOLUTE PROTECTION RULE
+==================================================
+
+DO NOT MODIFY:
+
+❌ Temple Maze
+❌ Temple Maze graphics
+❌ Temple Maze gameplay
+❌ Temple Maze controls
+❌ Temple Maze levels
+❌ Temple Maze scoring
+❌ Temple Maze timer
+❌ Temple Maze lives
+❌ Temple Maze result screen
+❌ Game Hub
+❌ Shared navigation
+
+ONLY MODIFY:
+
+✅ Modak Run visual graphics
+✅ Modak Run animations
+✅ Modak Run environment
+✅ Modak Run UI styling
+✅ Modak Run visual effects
+
+==================================================
+FINAL TEST
+==================================================
+
+After finishing:
+
+1. Open the Game Hub.
+2. Confirm Temple Maze is still visible.
+3. Open Temple Maze.
+4. Confirm Temple Maze still works exactly as before.
+5. Return to Game Hub.
+6. Open Modak Run.
+7. Confirm Modak Run gameplay still works.
+8. Test movement.
+9. Test jumping.
+10. Test sliding.
+11. Test modaks.
+12. Test coins.
+13. Test obstacles.
+14. Test power-ups.
+15. Test Festival Rush.
+16. Test score.
+17. Test distance.
+18. Test Game Over.
+19. Test Best Score.
+20. Check the browser console for errors.
+
+If anything in Temple Maze breaks, immediately restore the Temple Maze code and leave it unchanged.
+
+FINAL GOAL:
+
+Make ONLY MODAK RUN look dramatically more beautiful, polished, festive and professional while keeping the first game, MOOSHIKA MAZE, completely safe and unchanged.
